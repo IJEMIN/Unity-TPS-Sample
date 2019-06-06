@@ -20,9 +20,6 @@ public class PlayerMovement : MonoBehaviour
     float currentSpeed;
     float velocityY;
 
-    public float moveInputThreshold = 0.2f;
-
-
     private PlayerShooter m_PlayerShooter;
     
 
@@ -32,8 +29,6 @@ public class PlayerMovement : MonoBehaviour
     PlayerInput m_PlayerInput;
     CharacterController m_CharacterController;
 
-
-    public bool Run = false;
     void Start()
     {
         m_PlayerInput = GetComponent<PlayerInput>();
@@ -42,22 +37,31 @@ public class PlayerMovement : MonoBehaviour
         m_CharacterController = GetComponent<CharacterController>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (m_PlayerInput.moveInput.magnitude > moveInputThreshold)
+        if(currentSpeed > 0.2f)
         {
             Rotate(m_PlayerInput.moveInput);
-            Move(m_PlayerInput.moveInput);
+
         }
+        Move(m_PlayerInput.moveInput);   
     }
 
-    public void Move(Vector2 inputDir)
+    public void Move(Vector2 moveInput)
     {
-        float targetSpeed = speed * inputDir.magnitude;
+        float targetSpeed = speed * moveInput.magnitude;
+
+
+        Vector3 moveDirection = Vector3.Normalize(transform.forward * moveInput.y + transform.right * moveInput.x);
+        
+
+
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
 
         velocityY += Time.deltaTime * gravity;
-        Vector3 velocity = transform.forward * currentSpeed * inputDir.y + transform.right * currentSpeed * inputDir.x + Vector3.up * velocityY;
+
+        Vector3 velocity = moveDirection * currentSpeed;
+        velocity += Vector3.up * velocityY;
 
         m_CharacterController.Move(velocity * Time.deltaTime);
         currentSpeed = new Vector2(m_CharacterController.velocity.x, m_CharacterController.velocity.z).magnitude;
@@ -72,17 +76,15 @@ public class PlayerMovement : MonoBehaviour
         float animationSpeedPercent = currentSpeed / speed;
 
         //  m_Animator.SetFloat("Move", animationSpeedPercent, speedSmoothTime, Time.deltaTime);
+        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent);
+        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent);
+
     }
 
     public void Rotate(Vector2 direction)
     {
-
         var targetRotation = m_CharacterFollowCam.eulerAngles.y;
 
-        if (direction != Vector2.zero && Run)
-        {
-            targetRotation += Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
-        }
 
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
     }

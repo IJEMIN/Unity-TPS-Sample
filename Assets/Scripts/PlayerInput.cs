@@ -20,6 +20,7 @@ public class PlayerInput : MonoBehaviour
 
 
     public Vector2 moveInput{get; private set;}
+    public bool sprint { get; private set; }
     public float mouseX { get; private set; }
     public float mouseY { get; private set; }
 
@@ -54,7 +55,9 @@ public class PlayerInput : MonoBehaviour
         }
         
         jump = Input.GetButtonDown(jumpButtonName);
-        
+
+        sprint = Input.GetKey(KeyCode.LeftShift);
+
         // fire에 관한 입력 감지
         fire = Input.GetButtonDown(fireButtonName);
         // reload에 관한 입력 감지
