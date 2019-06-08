@@ -37,7 +37,6 @@ public class Gun : MonoBehaviour
     public float reloadTime = 1.8f; // 재장전 소요 시간
     private float lastFireTime; // 총을 마지막으로 발사한 시점
 
-
     private void Awake()
     {
         // 사용할 컴포넌트들의 참조를 가져오기
@@ -61,7 +60,7 @@ public class Gun : MonoBehaviour
     }
 
     // 발사 시도
-    public void Fire()
+    public void Fire(Vector3 rayStartPos, Vector3 direction)
     {
         // 현재 상태가 발사 가능한 상태
         // && 마지막 총 발사 시점에서 timeBetFire 이상의 시간이 지남
@@ -71,12 +70,12 @@ public class Gun : MonoBehaviour
             // 마지막 총 발사 시점을 갱신
             lastFireTime = Time.time;
             // 실제 발사 처리 실행
-            Shot();
+            Shot(rayStartPos,direction);
         }
     }
 
     // 실제 발사 처리
-    private void Shot()
+    private void Shot(Vector3 rayStartPos, Vector3 fireDirection)
     {
         // 레이캐스트에 의한 충돌 정보를 저장하는 컨테이너
         RaycastHit hit;
@@ -84,8 +83,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Raycast(fireTransform.position,
-            fireTransform.forward, out hit, fireDistance))
+        if (Physics.Raycast(rayStartPos, fireDirection, out hit, fireDistance))
         {
             // 레이가 어떤 물체와 충돌한 경우
 

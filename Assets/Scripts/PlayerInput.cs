@@ -13,6 +13,8 @@ public class PlayerInput : MonoBehaviour
     public string rotateVerticalAxisName = "Mouse Y";
 
     public string fireButtonName = "Fire1"; // 발사를 위한 입력 버튼 이름
+    public string aimDownSightName = "Fire2"; // 발사를 위한 입력 버튼 이름
+
     public string reloadButtonName = "Reload"; // 재장전을 위한 입력 버튼 이름
     public string jumpButtonName = "Reload";
 
@@ -25,6 +27,9 @@ public class PlayerInput : MonoBehaviour
     public float mouseY { get; private set; }
 
     public bool fire { get; private set; } // 감지된 발사 입력값
+    
+    public bool aimDownSight { get; private set; } // 감지된 발사 입력값
+    
     public bool reload { get; private set; } // 감지된 재장전 입력값
 
     public bool jump {get; private set;}
@@ -59,7 +64,9 @@ public class PlayerInput : MonoBehaviour
         sprint = Input.GetKey(KeyCode.LeftShift);
 
         // fire에 관한 입력 감지
-        fire = Input.GetButtonDown(fireButtonName);
+        fire = Input.GetButton(fireButtonName);
+        aimDownSight = Input.GetButton(aimDownSightName);
+        
         // reload에 관한 입력 감지
         reload = Input.GetButtonDown(reloadButtonName);
     }

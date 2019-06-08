@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     
 
     Animator m_Animator;
-    Transform m_CharacterFollowCam;
+    Camera m_CharacterFollowCam;
 
     PlayerInput m_PlayerInput;
     CharacterController m_CharacterController;
@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     {
         m_PlayerInput = GetComponent<PlayerInput>();
         m_Animator = GetComponent<Animator>();
-        m_CharacterFollowCam = Camera.main.transform;
+        m_CharacterFollowCam = Camera.main;
         m_CharacterController = GetComponent<CharacterController>();
     }
 
@@ -41,9 +41,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if(currentSpeed > 0.2f)
         {
-            Rotate(m_PlayerInput.moveInput);
-
+            Rotate();
         }
+        
         Move(m_PlayerInput.moveInput);   
     }
 
@@ -76,16 +76,15 @@ public class PlayerMovement : MonoBehaviour
         float animationSpeedPercent = currentSpeed / speed;
 
         //  m_Animator.SetFloat("Move", animationSpeedPercent, speedSmoothTime, Time.deltaTime);
-        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent);
-        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent);
+        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent, speedSmoothTime, Time.deltaTime);
+        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent,speedSmoothTime, Time.deltaTime);
 
     }
 
-    public void Rotate(Vector2 direction)
+    public void Rotate()
     {
-        var targetRotation = m_CharacterFollowCam.eulerAngles.y;
-
-
+        var targetRotation = m_CharacterFollowCam.transform.eulerAngles.y;
+        
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, GetModifiedSmoothTime(turnSmoothTime));
     }
 
@@ -111,4 +110,5 @@ public class PlayerMovement : MonoBehaviour
         }
         return smoothTime / airControlPercent;
     }
+    
 }
