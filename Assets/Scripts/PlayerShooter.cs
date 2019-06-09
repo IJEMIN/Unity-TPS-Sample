@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cinemachine;
+using UnityEngine;
 
 // 주어진 Gun 오브젝트를 쏘거나 재장전
 // 알맞은 애니메이션을 재생하고 IK를 사용해 캐릭터 양손이 총에 위치하도록 조정
@@ -10,6 +11,7 @@ public class PlayerShooter : MonoBehaviour {
     private Camera playerCamera;
     
     public AimState aimState { get; private set; }
+
 
     private float releaseGunAfter = 3f;
     
@@ -25,11 +27,12 @@ public class PlayerShooter : MonoBehaviour {
 
     private Vector3 smoothedVelocity;
 
+
     private bool linedUp
     {
         get
         {
-            if (Mathf.Abs(playerCamera.transform.eulerAngles.y - transform.eulerAngles.y) > 0.1f)
+            if (Mathf.Abs(playerCamera.transform.eulerAngles.y - transform.eulerAngles.y) > 1f)
             {
                 return false;
             }
@@ -59,6 +62,8 @@ public class PlayerShooter : MonoBehaviour {
     }
 
     private void Update() {
+        
+        playerAnimator.SetBool("IsShooting",false);
         if (playerInput.reload)
         {
             // 재장전 입력 감지시 재장전
@@ -87,21 +92,32 @@ public class PlayerShooter : MonoBehaviour {
         else if (aimState == AimState.HipFire)
         {
             _playerMovement.Rotate();
-
+            
+            
             if (playerInput.fire)
             {
-                gun.Fire(playerCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,0f)),playerCamera.transform.forward);
+                if (gun.state == Gun.State.Ready)
+                {
+                    playerAnimator.SetBool("IsShooting",true);    
+                }
+                
+                gun.Fire(playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0f)),
+                    playerCamera.transform.forward);
+
+
             }
             else
             {
                 aimState = AimState.Idle;
             }
-            
-                   
-
         }
-        
-        gunPivot.localEulerAngles = Vector3.right * playerCamera.transform.localEulerAngles.x;
+
+
+        var angle = playerCamera.transform.eulerAngles.x;
+
+        if (angle > 90f) angle -= 360f;
+
+        playerAnimator.SetFloat("Angle", angle);
 
         // 남은 탄약 UI를 갱신
         UpdateUI();
@@ -116,46 +132,33 @@ public class PlayerShooter : MonoBehaviour {
         }
     }
 
-    private Vector3 previousRightElbowPosition;
+    private Vector3 previousRightElbowPosition = Vector3.zero;
 
     // 애니메이터의 IK 갱신
     private void OnAnimatorIK(int layerIndex) {
         // 총의 기준점 gunPivot을 3D 모델의 오른쪽 팔꿈치 위치로 이동
 
-        
- 
 
-            // IK를 사용하여 왼손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
-            playerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
-            playerAnimator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1.0f);
+        if (gun.state == Gun.State.Reloading) return; 
 
-            playerAnimator.SetIKPosition(AvatarIKGoal.LeftHand,
-                leftHandMount.position);
-            playerAnimator.SetIKRotation(AvatarIKGoal.LeftHand,
-                leftHandMount.rotation);
+        // IK를 사용하여 왼손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
+        playerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
+        playerAnimator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1.0f);
 
-            // IK를 사용하여 오른손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
-            playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1.0f);
-            playerAnimator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1.0f);
-
-            playerAnimator.SetIKPosition(AvatarIKGoal.RightHand,
-                rightHandMount.position);
-            playerAnimator.SetIKRotation(AvatarIKGoal.RightHand,
-                rightHandMount.rotation);
-                
-            playerAnimator.SetLookAtWeight(1.0f);
-            playerAnimator.SetLookAtPosition(playerCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,100.0f)));
-
-            if (previousRightElbowPosition != Vector3.zero)
-            {
-                var offset = playerAnimator.bodyPosition - previousRightElbowPosition;
-
-                gunPivot.Translate(0, offset.y, 0);
-            }
-
-            previousRightElbowPosition = playerAnimator.bodyPosition;
-
-
+        playerAnimator.SetIKPosition(AvatarIKGoal.LeftHand,
+            leftHandMount.position);
+        playerAnimator.SetIKRotation(AvatarIKGoal.LeftHand,
+            leftHandMount.rotation);
+//
+//            // IK를 사용하여 오른손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
+//            playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1.0f);
+//            playerAnimator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1.0f);
+//
+//            playerAnimator.SetIKPosition(AvatarIKGoal.RightHand,
+//                rightHandMount.position);
+//            playerAnimator.SetIKRotation(AvatarIKGoal.RightHand,
+//                rightHandMount.rotation);
+//                
 
     }
 }

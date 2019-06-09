@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cbfd837af65fae458eb59eb6143e0d1, type: 3}
+  m_Name: Emote
+  m_EditorClassIdentifier: 
+  blendTime: 0.2
+  emoteData:
+  - clip: {fileID: 7400000, guid: cbe831e51750db54eafb4a43a5760762, type: 3}
+    keepPlaying: 0
+  - clip: {fileID: 7400000, guid: a03a638ab2a635a4589eab6688c6f0f9, type: 3}
+    keepPlaying: 0

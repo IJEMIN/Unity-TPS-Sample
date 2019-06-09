@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e731c574b9bd8934a8a42cf4b62761ce, type: 3}
+  m_Name: Run
+  m_EditorClassIdentifier: 
+  animMovePlaySpeed: 1
+  damping: 0.07
+  maxStep: 12.5
+  stateResetWindow: 0.15
+  animAim: {fileID: 7400000, guid: 4bff752e42cef454596b3dc693043579, type: 3}
+  blendSpaceNodes:
+  - clip: {fileID: 7400000, guid: b45db5f715ea7ad459d17fb0a14cfb8b, type: 3}
+    position: {x: 0, y: 1}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: 352a8400a87888b4f80c9ac28fffccbb, type: 3}
+    position: {x: 0.7, y: 0.7}
+    speed: 1
+    weight: 0.000053205255
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: ddd46aa5e8cc3764083c32a755c43db0, type: 3}
+    position: {x: 1, y: 0}
+    speed: 1
+    weight: 0.99674505
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: 41c84d5a212532242b90bd1c1417e2d4, type: 3}
+    position: {x: 0.7, y: -0.7}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: 6000933a870501643bc39c47a1c12d27, type: 3}
+    position: {x: 0, y: -1}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: 343416eb5583144428c71faac2024f4b, type: 3}
+    position: {x: -0.7, y: -0.7}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: 5c7d61afc53d4474d9c2d58f2bee8522, type: 3}
+    position: {x: -1, y: 0}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: fce5642fa2d8b2244970e14d61f6a11c, type: 3}
+    position: {x: -0.7, y: 0.7}
+    speed: 1
+    weight: 0
+    clipLength: 0.73333335
+  - clip: {fileID: 7400000, guid: a754b3263649e3e4393316c1f432afa9, type: 3}
+    position: {x: 0, y: 0}
+    speed: 1
+    weight: 0.0032017448
+    clipLength: 0.73333335
+  enableIK: 1
+  actionAnimations:
+  - action: 1
+    animation: {fileID: 7400000, guid: 9482a3c2c8a3ff64eb19784518ea0744, type: 3}
+    restartTimeOffset: 0
+  - action: 2
+    animation: {fileID: 7400000, guid: 9b97a04003ee2b94db0da17c9b4d22e2, type: 3}
+    restartTimeOffset: 0
+  - action: 3
+    animation: {fileID: 7400000, guid: 89aea2f2d4ea6da4a872c8fe598a57f4, type: 3}
+    restartTimeOffset: 0

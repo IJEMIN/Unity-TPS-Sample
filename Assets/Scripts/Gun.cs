@@ -60,7 +60,7 @@ public class Gun : MonoBehaviour
     }
 
     // 발사 시도
-    public void Fire(Vector3 rayStartPos, Vector3 direction)
+    public bool Fire(Vector3 rayStartPos, Vector3 direction)
     {
         // 현재 상태가 발사 가능한 상태
         // && 마지막 총 발사 시점에서 timeBetFire 이상의 시간이 지남
@@ -71,7 +71,11 @@ public class Gun : MonoBehaviour
             lastFireTime = Time.time;
             // 실제 발사 처리 실행
             Shot(rayStartPos,direction);
+
+            return true;
         }
+
+        return false;
     }
 
     // 실제 발사 처리

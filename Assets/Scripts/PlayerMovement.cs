@@ -37,12 +37,18 @@ public class PlayerMovement : MonoBehaviour
         m_CharacterController = GetComponent<CharacterController>();
     }
 
+    void Update()
+    {
+        UpdateAnimation(m_PlayerInput.moveInput);
+    }
     private void FixedUpdate()
     {
         if(currentSpeed > 0.2f)
         {
             Rotate();
         }
+
+        if (m_PlayerInput.jump) Jump();
         
         Move(m_PlayerInput.moveInput);   
     }
@@ -73,11 +79,9 @@ public class PlayerMovement : MonoBehaviour
 
 
         // animator
-        float animationSpeedPercent = currentSpeed / speed;
 
         //  m_Animator.SetFloat("Move", animationSpeedPercent, speedSmoothTime, Time.deltaTime);
-        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent, speedSmoothTime, Time.deltaTime);
-        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent,speedSmoothTime, Time.deltaTime);
+
 
     }
 
@@ -109,6 +113,14 @@ public class PlayerMovement : MonoBehaviour
             return float.MaxValue;
         }
         return smoothTime / airControlPercent;
+    }
+
+    void UpdateAnimation(Vector2 moveInput)
+    {
+        float animationSpeedPercent = currentSpeed / speed;
+
+        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent);
+        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent);
     }
     
 }

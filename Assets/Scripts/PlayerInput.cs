@@ -16,7 +16,7 @@ public class PlayerInput : MonoBehaviour
     public string aimDownSightName = "Fire2"; // 발사를 위한 입력 버튼 이름
 
     public string reloadButtonName = "Reload"; // 재장전을 위한 입력 버튼 이름
-    public string jumpButtonName = "Reload";
+    public string jumpButtonName = "Jump";
 
     // 값 할당은 내부에서만 가능
 
@@ -65,7 +65,7 @@ public class PlayerInput : MonoBehaviour
 
         // fire에 관한 입력 감지
         fire = Input.GetButton(fireButtonName);
-        aimDownSight = Input.GetButton(aimDownSightName);
+        aimDownSight = Input.GetMouseButton(1);
         
         // reload에 관한 입력 감지
         reload = Input.GetButtonDown(reloadButtonName);
