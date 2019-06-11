@@ -117,7 +117,7 @@ public class PlayerShooter : MonoBehaviour {
 
         if (angle > 90f) angle -= 360f;
 
-        playerAnimator.SetFloat("Angle", angle / 60f);
+        playerAnimator.SetFloat("Angle", angle / 90f);
 
         // 남은 탄약 UI를 갱신
         UpdateUI();
