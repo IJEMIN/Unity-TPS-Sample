@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bd9013048d74cf4ebc6dbcfc3e9ab0a, type: 3}
+  m_Name: AnimStateSelector
+  m_EditorClassIdentifier: 
+  controllers:
+  - animationState: 1
+    template: {fileID: 11400000, guid: 9604fa150a6a1424bb73e987053ab47e, type: 2}
+    transitionTime: 0.17
+    customTransitions:
+    - sourceState: 3
+      transtionTime: 0.025
+  - animationState: 2
+    template: {fileID: 11400000, guid: 99447ef429bf4a4479aac42441bdfce2, type: 2}
+    transitionTime: 0.15
+    customTransitions: []
+  - animationState: 3
+    template: {fileID: 11400000, guid: d9dc5332e1a00944cb79fbc47bd1724e, type: 2}
+    transitionTime: 0.1
+    customTransitions: []
+  - animationState: 4
+    template: {fileID: 11400000, guid: cab1f67d7ceb6394f88e1620aa7da288, type: 2}
+    transitionTime: 0.1
+    customTransitions: []
+  - animationState: 0
+    template: {fileID: 11400000, guid: d77ea4c6dc9f96b41bf1c82208f079df, type: 2}
+    transitionTime: 0.1
+    customTransitions:
+    - sourceState: 3
+      transtionTime: 0.03

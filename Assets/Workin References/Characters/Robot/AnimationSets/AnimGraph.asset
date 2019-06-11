@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f759cf85fa73aaa49a9691b2f39eff2b, type: 3}
+  m_Name: AnimGraph
+  m_EditorClassIdentifier: 
+  rootNodes:
+  - {fileID: 11400000, guid: 14ffa2522414e8448962cb1bcbaddd37, type: 2}
+  - {fileID: 11400000, guid: 70a25f20bdc7acb4d98fa1792afa5394, type: 2}
+  - {fileID: 11400000, guid: a193b63d04a8f1b4abe313a6e4182995, type: 2}
+  - {fileID: 11400000, guid: 3e6d25ade3544b943a33a49185f40be5, type: 2}
+  - {fileID: 11400000, guid: 6c846f109f0c0084192507dfacc708a5, type: 2}
+  - {fileID: 11400000, guid: 2dd8fff18d2d71b4aaed703d84ebfeae, type: 2}

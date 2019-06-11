@@ -1,5 +1,6 @@
 ﻿using Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 주어진 Gun 오브젝트를 쏘거나 재장전
 // 알맞은 애니메이션을 재생하고 IK를 사용해 캐릭터 양손이 총에 위치하도록 조정
@@ -9,11 +10,13 @@ public class PlayerShooter : MonoBehaviour {
     public enum AimState { Idle, HipFire}
 
     private Camera playerCamera;
-    
+
+    public Vector2 crossHairPosition { get; private set; }
+
+    public Image crossHair;
     public AimState aimState { get; private set; }
 
-
-    private float releaseGunAfter = 3f;
+    public LayerMask excludeTarget;
     
     public Gun gun; // 사용할 총
     public Transform gunPivot; // 총 배치의 기준점
@@ -24,8 +27,6 @@ public class PlayerShooter : MonoBehaviour {
 
     private PlayerInput playerInput; // 플레이어의 입력
     private Animator playerAnimator; // 애니메이터 컴포넌트
-
-    private Vector3 smoothedVelocity;
 
 
     private bool linedUp
@@ -40,9 +41,27 @@ public class PlayerShooter : MonoBehaviour {
             return true;
         }
     }
-    
+
+    private bool IsDistanceEnough
+    {
+        get
+        {
+            if(Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget))
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     private void Start()
     {
+        if (excludeTarget != (excludeTarget | (1 << gameObject.layer)))
+        {
+            excludeTarget |= (1 << gameObject.layer);
+        }
+
         playerCamera = Camera.main;
         // 사용할 컴포넌트들을 가져오기
         playerInput = GetComponent<PlayerInput>();
@@ -54,6 +73,7 @@ public class PlayerShooter : MonoBehaviour {
         
         // 슈터가 활성화될 때 총도 함께 활성화
         gun.gameObject.SetActive(true);
+        gun.excludeTarget = excludeTarget;
     }
 
     private void OnDisable() {
@@ -61,9 +81,9 @@ public class PlayerShooter : MonoBehaviour {
         gun.gameObject.SetActive(false);
     }
 
+    Vector3 currentVelocity;
     private void Update() {
         
-        playerAnimator.SetBool("IsShooting",false);
         if (playerInput.reload)
         {
             // 재장전 입력 감지시 재장전
@@ -73,6 +93,33 @@ public class PlayerShooter : MonoBehaviour {
                 playerAnimator.SetTrigger("Reload");
             }
         }
+
+
+        var startPoint = playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 1f));
+
+        RaycastHit hit;
+
+        var ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
+        var targetPoint = playerCamera.transform.position + playerCamera.transform.forward * 100f;
+
+        if (Physics.Raycast(ray, out hit, 100f, ~excludeTarget))
+        {
+            targetPoint = hit.point;
+        }
+
+        if(Physics.Linecast(gun.fireTransform.position,targetPoint, out hit))
+        {
+            crossHair.transform.position = Vector3.SmoothDamp(
+                crossHair.transform.position,
+                playerCamera.WorldToScreenPoint(hit.point), ref currentVelocity, 0.1f);
+        }
+        else
+        {
+            crossHair.transform.position = Vector3.SmoothDamp(
+                crossHair.transform.position,
+                playerCamera.WorldToScreenPoint(targetPoint),ref currentVelocity, 0.1f);
+        }
+
 
 
         if (aimState == AimState.Idle)
@@ -92,19 +139,14 @@ public class PlayerShooter : MonoBehaviour {
         else if (aimState == AimState.HipFire)
         {
             _playerMovement.Rotate();
-            
-            
-            if (playerInput.fire)
+
+            if (IsDistanceEnough && playerInput.fire)
             {
-                if (gun.state == Gun.State.Ready)
-                {
-                    playerAnimator.SetBool("IsShooting",true);    
-                }
                 
-                gun.Fire(playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0f)),
-                    playerCamera.transform.forward);
-
-
+                if(gun.Fire(startPoint, targetPoint))
+                {
+                    playerAnimator.SetTrigger("Shoot");
+                }
             }
             else
             {
@@ -117,7 +159,10 @@ public class PlayerShooter : MonoBehaviour {
 
         if (angle > 90f) angle -= 360f;
 
+
         playerAnimator.SetFloat("Angle", angle / 90f);
+
+ 
 
         // 남은 탄약 UI를 갱신
         UpdateUI();

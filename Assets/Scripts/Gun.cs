@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 총을 구현한다
 public class Gun : MonoBehaviour
@@ -12,8 +13,9 @@ public class Gun : MonoBehaviour
         Reloading // 재장전 중
     }
 
-    public LayerMask excludeTarget;
+    [HideInInspector] public LayerMask excludeTarget;
     public State state { get; private set; } // 현재 총의 상태
+
 
     public Transform fireTransform; // 총알이 발사될 위치
 
@@ -61,7 +63,7 @@ public class Gun : MonoBehaviour
     }
 
     // 발사 시도
-    public bool Fire(Vector3 rayStartPos, Vector3 direction)
+    public bool Fire(Vector3 rayStartPos, Vector3 targetPoint)
     {
         // 현재 상태가 발사 가능한 상태
         // && 마지막 총 발사 시점에서 timeBetFire 이상의 시간이 지남
@@ -71,7 +73,7 @@ public class Gun : MonoBehaviour
             // 마지막 총 발사 시점을 갱신
             lastFireTime = Time.time;
             // 실제 발사 처리 실행
-            Shot(rayStartPos,direction);
+            Shot(rayStartPos, targetPoint);
 
             return true;
         }
@@ -80,7 +82,7 @@ public class Gun : MonoBehaviour
     }
 
     // 실제 발사 처리
-    private void Shot(Vector3 rayStartPos, Vector3 fireDirection)
+    private void Shot(Vector3 rayStartPos, Vector3 targetPoint)
     {
         // 레이캐스트에 의한 충돌 정보를 저장하는 컨테이너
         RaycastHit hit;
@@ -88,7 +90,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Raycast(rayStartPos, fireDirection, out hit, fireDistance, ~excludeTarget))
+        if (Physics.Linecast(fireTransform.position, targetPoint, out hit, ~excludeTarget))
         {
             // 레이가 어떤 물체와 충돌한 경우
 
@@ -121,8 +123,7 @@ public class Gun : MonoBehaviour
         {
             // 레이가 다른 물체와 충돌하지 않았다면
             // 총알이 최대 사정거리까지 날아갔을때의 위치를 충돌 위치로 사용
-            hitPosition = fireTransform.position +
-                          fireTransform.forward * fireDistance;
+            hitPosition = targetPoint;
         }
 
         // 발사 이펙트 재생 시작

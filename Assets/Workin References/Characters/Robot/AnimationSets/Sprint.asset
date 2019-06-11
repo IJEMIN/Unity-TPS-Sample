@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d10c9d066eb2d95428a6e7bb4fa071fe, type: 3}
+  m_Name: Sprint
+  m_EditorClassIdentifier: 
+  animMoveNW: {fileID: 7400000, guid: 39cbb36b763e71e43b3375ae3507067f, type: 3}
+  animMoveN: {fileID: 7400000, guid: 019d148439177a8418cdd0145201b8b6, type: 3}
+  animMoveNE: {fileID: 7400000, guid: 92bd83f4bbcfa2f48a3625434053ea1c, type: 3}
+  animMovePlaySpeed: 1
+  animAimDownToUp: {fileID: 7400000, guid: 17666277a278e6040bdcd2e84a21599c, type: 3}
+  stateResetWindow: 0.15

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7f277d80b2a11f40b7dade5d0a207d0, type: 3}
+  m_Name: InAir
+  m_EditorClassIdentifier: 
+  runTemplate: {fileID: 11400000, guid: 6c4b960050ba0bb4f9cd510f093afd65, type: 2}
+  sprintTemplate: {fileID: 11400000, guid: b05104007906163489533a99fad07f7b, type: 2}
+  sprintTransitionSpeed: 0.075
+  resetControllerOnChange: 0

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6792de5baaa584e97b3dad61008dbb, type: 3}
+  m_Name: Squash
+  m_EditorClassIdentifier: 
+  animSquash: {fileID: 7400000, guid: 5c321b6d06428094cb7271f36ce9ae7b, type: 3}
+  dirChangeMinAngle: 35
+  dirChangeTimePenalty: 0.4
+  stop:
+    weight: 0.3
+    playSpeed: 2
+  start:
+    weight: 0.4
+    playSpeed: 1.6
+  changeDir:
+    weight: 0.4
+    playSpeed: 1.75
+  doubleJump:
+    weight: 0.35
+    playSpeed: 1.5
+  landMin:
+    weight: 0.3
+    playSpeed: 1.3
+  landMinFallSpeed: 3
+  landMax:
+    weight: 0.8
+    playSpeed: 1.3
+  landMaxFallSpeed: 5
