@@ -12,6 +12,7 @@ public class Gun : MonoBehaviour
         Reloading // 재장전 중
     }
 
+    public LayerMask excludeTarget;
     public State state { get; private set; } // 현재 총의 상태
 
     public Transform fireTransform; // 총알이 발사될 위치
@@ -87,7 +88,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Raycast(rayStartPos, fireDirection, out hit, fireDistance))
+        if (Physics.Raycast(rayStartPos, fireDirection, out hit, fireDistance, ~excludeTarget))
         {
             // 레이가 어떤 물체와 충돌한 경우
 
@@ -107,6 +108,10 @@ public class Gun : MonoBehaviour
 
                 // 상대방의 OnDamage 함수를 실행시켜서 상대방에게 데미지 주기
                 target.ApplyDamage(damageMessage);
+            }
+            else
+            {
+                EffectManager.Instance.PlayHitEffect(hit.point,hit.normal,hit.transform);
             }
 
             // 레이가 충돌한 위치 저장
