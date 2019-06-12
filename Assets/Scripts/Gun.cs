@@ -29,7 +29,7 @@ public class Gun : MonoBehaviour
     public AudioClip reloadClip; // 재장전 소리
 
     public float damage = 25; // 공격력
-    private float fireDistance = 50f; // 사정거리
+    public float fireDistance = 100f; // 사정거리
 
     public int ammoRemain = 100; // 남은 전체 탄약
     public int magCapacity = 25; // 탄창 용량
@@ -63,7 +63,7 @@ public class Gun : MonoBehaviour
     }
 
     // 발사 시도
-    public bool Fire(Vector3 rayStartPos, Vector3 targetPoint)
+    public bool Fire(Vector3 aimTarget)
     {
         // 현재 상태가 발사 가능한 상태
         // && 마지막 총 발사 시점에서 timeBetFire 이상의 시간이 지남
@@ -73,7 +73,7 @@ public class Gun : MonoBehaviour
             // 마지막 총 발사 시점을 갱신
             lastFireTime = Time.time;
             // 실제 발사 처리 실행
-            Shot(rayStartPos, targetPoint);
+            Shot( fireTransform.position, aimTarget - fireTransform.position);
 
             return true;
         }
@@ -82,7 +82,7 @@ public class Gun : MonoBehaviour
     }
 
     // 실제 발사 처리
-    private void Shot(Vector3 rayStartPos, Vector3 targetPoint)
+    private void Shot(Vector3 startPoint, Vector3 direction)
     {
         // 레이캐스트에 의한 충돌 정보를 저장하는 컨테이너
         RaycastHit hit;
@@ -90,7 +90,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Linecast(fireTransform.position, targetPoint, out hit, ~excludeTarget))
+        if (Physics.Raycast(startPoint, direction, out hit, fireDistance, ~excludeTarget))
         {
             // 레이가 어떤 물체와 충돌한 경우
 
@@ -123,7 +123,7 @@ public class Gun : MonoBehaviour
         {
             // 레이가 다른 물체와 충돌하지 않았다면
             // 총알이 최대 사정거리까지 날아갔을때의 위치를 충돌 위치로 사용
-            hitPosition = targetPoint;
+            hitPosition = startPoint + direction * fireDistance;
         }
 
         // 발사 이펙트 재생 시작

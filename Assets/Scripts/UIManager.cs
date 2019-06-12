@@ -24,6 +24,11 @@ public class UIManager : MonoBehaviour {
     public Text scoreText; // 점수 표시용 텍스트
     public Text waveText; // 적 웨이브 표시용 텍스트
     public GameObject gameoverUI; // 게임 오버시 활성화할 UI 
+    public Crosshair crosshair;
+    
+    
+    Vector3 currentRecticleMovingVelocity;
+
 
     // 탄약 텍스트 갱신
     public void UpdateAmmoText(int magAmmo, int remainAmmo) {
@@ -44,6 +49,17 @@ public class UIManager : MonoBehaviour {
     public void SetActiveGameoverUI(bool active) {
         gameoverUI.SetActive(active);
     }
+
+    public void UpdateCrossHairPosition(Vector3 worldPosition)
+    {
+        crosshair.UpdatePosition(worldPosition);
+    }
+
+    public void SetActiveCrosshair(bool active)
+    {
+        crosshair.SetActiveReticle(active);
+    }
+    
 
     // 게임 재시작
     public void GameRestart() {

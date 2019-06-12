@@ -10,16 +10,12 @@ public class PlayerShooter : MonoBehaviour {
     public enum AimState { Idle, HipFire}
 
     private Camera playerCamera;
-
-    public Vector2 crossHairPosition { get; private set; }
-
-    public Image crossHair;
+    
     public AimState aimState { get; private set; }
 
     public LayerMask excludeTarget;
     
     public Gun gun; // 사용할 총
-    public Transform gunPivot; // 총 배치의 기준점
     public Transform leftHandMount; // 총의 왼쪽 손잡이, 왼손이 위치할 지점
     public Transform rightHandMount; // 총의 오른쪽 손잡이, 오른손이 위치할 지점
 
@@ -28,30 +24,26 @@ public class PlayerShooter : MonoBehaviour {
     private PlayerInput playerInput; // 플레이어의 입력
     private Animator playerAnimator; // 애니메이터 컴포넌트
 
+    private Vector3 aimPoint;
+
+    public float AngleYBetweenPlayerAndCamera
+    {
+        get { return playerCamera.transform.eulerAngles.y - transform.eulerAngles.y; }
+    }
 
     private bool linedUp
     {
         get
         {
-            if (Mathf.Abs(playerCamera.transform.eulerAngles.y - transform.eulerAngles.y) > 1f)
-            {
-                return false;
-            }
-
-            return true;
+            return !(Mathf.Abs(AngleYBetweenPlayerAndCamera) > 1f);
         }
     }
 
-    private bool IsDistanceEnough
+    private bool hasEnoughDistance
     {
         get
         {
-            if(Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget))
-            {
-                return false;
-            }
-
-            return true;
+            return !Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget);
         }
     }
 
@@ -61,7 +53,7 @@ public class PlayerShooter : MonoBehaviour {
         {
             excludeTarget |= (1 << gameObject.layer);
         }
-
+        
         playerCamera = Camera.main;
         // 사용할 컴포넌트들을 가져오기
         playerInput = GetComponent<PlayerInput>();
@@ -74,15 +66,18 @@ public class PlayerShooter : MonoBehaviour {
         // 슈터가 활성화될 때 총도 함께 활성화
         gun.gameObject.SetActive(true);
         gun.excludeTarget = excludeTarget;
+        
     }
 
     private void OnDisable() {
         // 슈터가 비활성화될 때 총도 함께 비활성화
         gun.gameObject.SetActive(false);
     }
+    
+    
 
-    Vector3 currentVelocity;
     private void Update() {
+        UpdateAimTarget();
         
         if (playerInput.reload)
         {
@@ -93,35 +88,7 @@ public class PlayerShooter : MonoBehaviour {
                 playerAnimator.SetTrigger("Reload");
             }
         }
-
-
-        var startPoint = playerCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 1f));
-
-        RaycastHit hit;
-
-        var ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
-        var targetPoint = playerCamera.transform.position + playerCamera.transform.forward * 100f;
-
-        if (Physics.Raycast(ray, out hit, 100f, ~excludeTarget))
-        {
-            targetPoint = hit.point;
-        }
-
-        if(Physics.Linecast(gun.fireTransform.position,targetPoint, out hit))
-        {
-            crossHair.transform.position = Vector3.SmoothDamp(
-                crossHair.transform.position,
-                playerCamera.WorldToScreenPoint(hit.point), ref currentVelocity, 0.1f);
-        }
-        else
-        {
-            crossHair.transform.position = Vector3.SmoothDamp(
-                crossHair.transform.position,
-                playerCamera.WorldToScreenPoint(targetPoint),ref currentVelocity, 0.1f);
-        }
-
-
-
+        
         if (aimState == AimState.Idle)
         {
             if (playerInput.fire)
@@ -140,10 +107,9 @@ public class PlayerShooter : MonoBehaviour {
         {
             _playerMovement.Rotate();
 
-            if (IsDistanceEnough && playerInput.fire)
+            if (hasEnoughDistance && playerInput.fire)
             {
-                
-                if(gun.Fire(startPoint, targetPoint))
+                if(gun.Fire(aimPoint))
                 {
                     playerAnimator.SetTrigger("Shoot");
                 }
@@ -168,23 +134,50 @@ public class PlayerShooter : MonoBehaviour {
         UpdateUI();
     }
 
+    private void UpdateAimTarget()
+    {
+        RaycastHit hit;
+        Vector3 lookPoint;
+        
+        var ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
+        
+        if (Physics.Raycast(ray, out hit, gun.fireDistance, ~excludeTarget))
+        {
+            lookPoint = hit.point;
+        }
+        else
+        {
+            lookPoint = playerCamera.transform.position + playerCamera.transform.forward * gun.fireDistance;
+        }
+
+        if(Physics.Linecast(gun.fireTransform.position, lookPoint, out hit, ~excludeTarget))
+        {
+            aimPoint = hit.point;
+        }
+        else
+        {
+            aimPoint = lookPoint;
+        }
+    }
+
     // 탄약 UI 갱신
     private void UpdateUI() {
         if (gun != null && UIManager.instance != null)
         {
             // UI 매니저의 탄약 텍스트에 탄창의 탄약과 남은 전체 탄약을 표시
             UIManager.instance.UpdateAmmoText(gun.magAmmo, gun.ammoRemain);
+
+            UIManager.instance.SetActiveCrosshair(hasEnoughDistance);
+            UIManager.instance.UpdateCrossHairPosition(aimPoint);
         }
     }
-
-    private Vector3 previousRightElbowPosition = Vector3.zero;
-
+    
     // 애니메이터의 IK 갱신
     private void OnAnimatorIK(int layerIndex) {
         // 총의 기준점 gunPivot을 3D 모델의 오른쪽 팔꿈치 위치로 이동
 
 
-        if (gun.state == Gun.State.Reloading) return; 
+        if (gun.state == Gun.State.Reloading) return;
 
         // IK를 사용하여 왼손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1.0f);
@@ -194,6 +187,7 @@ public class PlayerShooter : MonoBehaviour {
             leftHandMount.position);
         playerAnimator.SetIKRotation(AvatarIKGoal.LeftHand,
             leftHandMount.rotation);
+        
 //
 //            // IK를 사용하여 오른손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
 //            playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1.0f);
