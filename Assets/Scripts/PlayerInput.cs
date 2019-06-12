@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.XR;
+using Cursor = UnityEngine.Cursor;
 
 // 플레이어 캐릭터를 조작하기 위한 사용자 입력을 감지
 // 감지된 입력값을 다른 컴포넌트들이 사용할 수 있도록 제공
@@ -35,6 +38,11 @@ public class PlayerInput : MonoBehaviour
     public bool jump {get; private set;}
 
 
+    private void OnEnable()
+    {
+        ToggleCursorVisible(false);
+    }
+
     // 매프레임 사용자 입력을 감지
     private void Update()
     {
@@ -69,5 +77,10 @@ public class PlayerInput : MonoBehaviour
         
         // reload에 관한 입력 감지
         reload = Input.GetButtonDown(reloadButtonName);
+    }
+
+    public void ToggleCursorVisible(bool active)
+    {
+        Cursor.visible = active;
     }
 }
