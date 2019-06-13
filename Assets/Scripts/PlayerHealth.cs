@@ -9,6 +9,8 @@ public class PlayerHealth : LivingEntity {
     public AudioClip hitClip; // 피격 소리
     public AudioClip itemPickupClip; // 아이템 습득 소리
 
+    private bool isPlayer = false;
+
     private AudioSource playerAudioPlayer; // 플레이어 소리 재생기
     
     private void Awake() {
@@ -32,17 +34,10 @@ public class PlayerHealth : LivingEntity {
 
     void UpdateUI()
     {
-        if (dead)
-        {
-            UIManager.instance.UpdateHealthText(0f);
-        }
-        else
-        {
-            UIManager.instance.UpdateHealthText(health);
-        }
-        
-    }
+        if (!isPlayer) return;
 
+        UIManager.instance.UpdateHealthText(dead ? 0f : health);
+    }
 
     // 데미지 처리
     public override void ApplyDamage(DamageMessage damageMessage)

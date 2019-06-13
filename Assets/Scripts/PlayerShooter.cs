@@ -4,9 +4,10 @@ using UnityEngine.UI;
 
 // 주어진 Gun 오브젝트를 쏘거나 재장전
 // 알맞은 애니메이션을 재생하고 IK를 사용해 캐릭터 양손이 총에 위치하도록 조정
-public class PlayerShooter : MonoBehaviour {
-    
-    
+public class PlayerShooter : MonoBehaviour
+{
+
+    public bool isPlayer = false;
     public enum AimState { Idle, HipFire}
 
     private Camera playerCamera;
@@ -134,7 +135,11 @@ public class PlayerShooter : MonoBehaviour {
     }
 
     // 탄약 UI 갱신
-    private void UpdateUI() {
+    private void UpdateUI()
+    {
+
+        if (!isPlayer) return;
+        
         if (gun != null && UIManager.instance != null)
         {
             // UI 매니저의 탄약 텍스트에 탄창의 탄약과 남은 전체 탄약을 표시

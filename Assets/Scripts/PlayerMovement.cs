@@ -83,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
         {
             return float.MaxValue;
         }
+        
         return smoothTime / airControlPercent;
     }
 
