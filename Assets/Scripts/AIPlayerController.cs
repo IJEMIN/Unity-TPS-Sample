@@ -23,11 +23,14 @@ public class AIPlayerController : MonoBehaviour
         playerShooter = GetComponent<PlayerShooter>();
         playerHealth = GetComponent<PlayerHealth>();
         playerHealth.onDeath += HandleDeath;
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (playerHealth.dead) return;
+        
         if (target != null)
         {
             agent.SetDestination(target.position);
@@ -37,7 +40,6 @@ public class AIPlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         if (playerHealth.dead) return;
-
 
         var localVelocity  = transform.InverseTransformVector(agent.desiredVelocity);
         var moveInput = new Vector2(localVelocity.x, localVelocity.z);
@@ -51,5 +53,6 @@ public class AIPlayerController : MonoBehaviour
         playerMovement.enabled = false;
         playerShooter.enabled = false;
         animator.enabled = false;
+        agent.isStopped = true;
     }
 }
