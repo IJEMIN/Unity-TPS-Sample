@@ -17,35 +17,18 @@ public class PlayerShooter : MonoBehaviour {
     
     public Gun gun; // 사용할 총
     public Transform leftHandMount; // 총의 왼쪽 손잡이, 왼손이 위치할 지점
-    public Transform rightHandMount; // 총의 오른쪽 손잡이, 오른손이 위치할 지점
 
     private PlayerMovement _playerMovement;
 
-    private PlayerInput playerInput; // 플레이어의 입력
     private Animator playerAnimator; // 애니메이터 컴포넌트
 
     private Vector3 aimPoint;
 
-    public float AngleYBetweenPlayerAndCamera
-    {
-        get { return playerCamera.transform.eulerAngles.y - transform.eulerAngles.y; }
-    }
+    public float AngleYBetweenPlayerAndCamera => playerCamera.transform.eulerAngles.y - transform.eulerAngles.y;
 
-    private bool linedUp
-    {
-        get
-        {
-            return !(Mathf.Abs(AngleYBetweenPlayerAndCamera) > 1f);
-        }
-    }
+    private bool linedUp => !(Mathf.Abs(AngleYBetweenPlayerAndCamera) > 1f);
 
-    private bool hasEnoughDistance
-    {
-        get
-        {
-            return !Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget);
-        }
-    }
+    private bool hasEnoughDistance => !Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget);
 
     private void Start()
     {
@@ -56,7 +39,6 @@ public class PlayerShooter : MonoBehaviour {
         
         playerCamera = Camera.main;
         // 사용할 컴포넌트들을 가져오기
-        playerInput = GetComponent<PlayerInput>();
         playerAnimator = GetComponent<Animator>();
         _playerMovement = GetComponent<PlayerMovement>();
     }
@@ -74,40 +56,34 @@ public class PlayerShooter : MonoBehaviour {
         gun.gameObject.SetActive(false);
     }
     
-    
-
     private void Update() {
         UpdateAimTarget();
         
-        if (playerInput.reload)
-        {
-            // 재장전 입력 감지시 재장전
-            if (gun.Reload())
-            {
-                // 재장전 성공시에만 재장전 애니메이션 재생
-                playerAnimator.SetTrigger("Reload");
-            }
-        }
+        var angle = playerCamera.transform.eulerAngles.x;
+        if (angle > 90f) angle -= 360f;
         
+        playerAnimator.SetFloat("Angle", angle / 90f);
+        
+        UpdateUI();
+    }
+
+    public void Shoot()
+    {
         if (aimState == AimState.Idle)
         {
-            if (playerInput.fire)
+            if (!linedUp)
             {
-                if (!linedUp)
-                {
-                    _playerMovement.Rotate();    
-                }
-                else
-                {
-                    aimState = AimState.HipFire;
-                }
+                _playerMovement.Rotate();
+                return;
             }
+
+            aimState = AimState.HipFire;
         }
         else if (aimState == AimState.HipFire)
         {
             _playerMovement.Rotate();
 
-            if (hasEnoughDistance && playerInput.fire)
+            if (hasEnoughDistance)
             {
                 if(gun.Fire(aimPoint))
                 {
@@ -119,19 +95,16 @@ public class PlayerShooter : MonoBehaviour {
                 aimState = AimState.Idle;
             }
         }
+    }
 
-
-        var angle = playerCamera.transform.eulerAngles.x;
-
-        if (angle > 90f) angle -= 360f;
-
-
-        playerAnimator.SetFloat("Angle", angle / 90f);
-
- 
-
-        // 남은 탄약 UI를 갱신
-        UpdateUI();
+    public void Reload()
+    {
+        // 재장전 입력 감지시 재장전
+        if (gun.Reload())
+        {
+            // 재장전 성공시에만 재장전 애니메이션 재생
+            playerAnimator.SetTrigger("Reload");
+        }
     }
 
     private void UpdateAimTarget()
@@ -174,8 +147,6 @@ public class PlayerShooter : MonoBehaviour {
     
     // 애니메이터의 IK 갱신
     private void OnAnimatorIK(int layerIndex) {
-        // 총의 기준점 gunPivot을 3D 모델의 오른쪽 팔꿈치 위치로 이동
-
 
         if (gun.state == Gun.State.Reloading) return;
 
@@ -187,17 +158,6 @@ public class PlayerShooter : MonoBehaviour {
             leftHandMount.position);
         playerAnimator.SetIKRotation(AvatarIKGoal.LeftHand,
             leftHandMount.rotation);
-        
-//
-//            // IK를 사용하여 오른손의 위치와 회전을 총의 오른쪽 손잡이에 맞춘다
-//            playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1.0f);
-//            playerAnimator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1.0f);
-//
-//            playerAnimator.SetIKPosition(AvatarIKGoal.RightHand,
-//                rightHandMount.position);
-//            playerAnimator.SetIKRotation(AvatarIKGoal.RightHand,
-//                rightHandMount.rotation);
-//                
 
     }
 }

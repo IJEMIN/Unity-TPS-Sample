@@ -16,7 +16,7 @@ public class Crosshair : MonoBehaviour
 
     private Camera screenCamera;
 
-    private float smoothTime = 10f;
+    public float smoothTime = 10f;
     
     private void Awake()
     {

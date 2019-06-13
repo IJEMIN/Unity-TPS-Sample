@@ -17,53 +17,29 @@ public class PlayerMovement : MonoBehaviour
 
     public float speedSmoothTime = 0.1f;
     float speedSmoothVelocity;
-    float currentSpeed;
+    public float currentSpeed { get; private set; }
     float velocityY;
 
     private PlayerShooter m_PlayerShooter;
-    
 
     Animator m_Animator;
     Camera m_CharacterFollowCam;
 
-    PlayerInput m_PlayerInput;
     CharacterController m_CharacterController;
 
     void Start()
     {
-        m_PlayerInput = GetComponent<PlayerInput>();
         m_Animator = GetComponent<Animator>();
         m_CharacterFollowCam = Camera.main;
         m_CharacterController = GetComponent<CharacterController>();
     }
-
-    void Update()
-    {
-        UpdateAnimation(m_PlayerInput.moveInput);
-    }
-    private void FixedUpdate()
-    {
-        if(currentSpeed > 0.2f)
-        {
-            Rotate();
-        }
-
-        if (m_PlayerInput.jump) Jump();
-        
-        Move(m_PlayerInput.moveInput);   
-    }
-
+    
     public void Move(Vector2 moveInput)
     {
         float targetSpeed = speed * moveInput.magnitude;
-
-
         Vector3 moveDirection = Vector3.Normalize(transform.forward * moveInput.y + transform.right * moveInput.x);
         
-
-
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, GetModifiedSmoothTime(speedSmoothTime));
-
         velocityY += Time.deltaTime * gravity;
 
         Vector3 velocity = moveDirection * currentSpeed;
@@ -76,13 +52,8 @@ public class PlayerMovement : MonoBehaviour
         {
             velocityY = 0;
         }
-
-
-        // animator
-
-        //  m_Animator.SetFloat("Move", animationSpeedPercent, speedSmoothTime, Time.deltaTime);
-
-
+        
+        UpdateAnimation(moveInput);
     }
 
     public void Rotate()
@@ -122,5 +93,4 @@ public class PlayerMovement : MonoBehaviour
         m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent);
         m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent);
     }
-    
 }

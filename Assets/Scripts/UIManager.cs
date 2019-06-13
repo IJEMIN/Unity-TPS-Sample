@@ -23,11 +23,10 @@ public class UIManager : MonoBehaviour {
     public Text ammoText; // 탄약 표시용 텍스트
     public Text scoreText; // 점수 표시용 텍스트
     public Text waveText; // 적 웨이브 표시용 텍스트
+    public Text healthText;
+    
     public GameObject gameoverUI; // 게임 오버시 활성화할 UI 
     public Crosshair crosshair;
-    
-    
-    Vector3 currentRecticleMovingVelocity;
 
 
     // 탄약 텍스트 갱신
@@ -58,6 +57,11 @@ public class UIManager : MonoBehaviour {
     public void SetActiveCrosshair(bool active)
     {
         crosshair.SetActiveReticle(active);
+    }
+
+    public void UpdateHealthText(float health)
+    {
+        healthText.text = Mathf.Floor(health).ToString();
     }
     
 
