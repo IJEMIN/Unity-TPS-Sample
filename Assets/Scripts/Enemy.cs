@@ -7,10 +7,9 @@ public class Enemy : LivingEntity
 {
     public LayerMask whatIsTarget; // 추적 대상 레이어
 
-    private LivingEntity targetEntity; // 추적할 대상
+    public LivingEntity targetEntity; // 추적할 대상
     private NavMeshAgent pathFinder; // 경로계산 AI 에이전트
 
-    public ParticleSystem hitEffect; // 피격시 재생할 파티클 효과
     public AudioClip deathSound; // 사망시 재생할 소리
     public AudioClip hitSound; // 피격시 재생할 소리
 
@@ -18,7 +17,8 @@ public class Enemy : LivingEntity
     private AudioSource enemyAudioPlayer; // 오디오 소스 컴포넌트
     private Renderer enemyRenderer; // 렌더러 컴포넌트
 
-
+    public float damage;
+    
     // 추적할 대상이 존재하는지 알려주는 프로퍼티
     private bool hasTarget
     {
@@ -56,6 +56,7 @@ public class Enemy : LivingEntity
         health = newHealth;
         // 내비메쉬 에이전트의 이동 속도 설정
         pathFinder.speed = newSpeed;
+        damage = newDamage;
         // 렌더러가 사용중인 머테리얼의 컬러를 변경, 외형 색이 변함
         enemyRenderer.material.color = skinColor;
     }
@@ -92,8 +93,7 @@ public class Enemy : LivingEntity
 
                 // 20 유닛의 반지름을 가진 가상의 구를 그렸을때, 구와 겹치는 모든 콜라이더를 가져옴
                 // 단, whatIsTarget 레이어를 가진 콜라이더만 가져오도록 필터링
-                Collider[] colliders =
-                    Physics.OverlapSphere(transform.position, 20f, whatIsTarget);
+                Collider[] colliders = Physics.OverlapSphere(transform.position, 20f, whatIsTarget);
 
                 // 모든 콜라이더들을 순회하면서, 살아있는 LivingEntity 찾기
                 for (int i = 0; i < colliders.Length; i++)
@@ -126,12 +126,6 @@ public class Enemy : LivingEntity
         // 아직 사망하지 않은 경우에만 피격 효과 재생
         if (!dead)
         {
-            // 공격 받은 지점과 방향으로 파티클 효과를 재생
-            hitEffect.transform.position = damageMessage.hitPoint;
-            hitEffect.transform.rotation
-                = Quaternion.LookRotation(damageMessage.hitNormal);
-            hitEffect?.Play();
-
             // 피격 효과음 재생
             if (hitSound != null) enemyAudioPlayer.PlayOneShot(hitSound);
         }
@@ -157,7 +151,8 @@ public class Enemy : LivingEntity
         pathFinder.enabled = false;
 
         // 사망 애니메이션 재생
-        enemyAnimator?.SetTrigger("Die");
+        //enemyAnimator?.SetTrigger("Die");
+        enemyAnimator.enabled = false;
         // 사망 효과음 재생
         if (deathSound != null) enemyAudioPlayer.PlayOneShot(deathSound);
     }

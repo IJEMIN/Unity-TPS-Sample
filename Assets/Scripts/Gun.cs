@@ -17,6 +17,9 @@ public class Gun : MonoBehaviour
     public State state { get; private set; } // 현재 총의 상태
 
 
+    private PlayerShooter gunHolder;
+
+
     public Transform fireTransform; // 총알이 발사될 위치
 
     public ParticleSystem muzzleFlashEffect; // 총구 화염 효과
@@ -52,6 +55,11 @@ public class Gun : MonoBehaviour
         bulletLineRenderer.enabled = false;
     }
 
+
+    public void Setup(PlayerShooter gunHolder)
+    {
+        this.gunHolder = gunHolder;
+    }
     private void OnEnable()
     {
         // 현재 탄창을 가득채우기
@@ -90,7 +98,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Raycast(startPoint, direction, out hit, fireDistance, ~excludeTarget))
+        if (Physics.Raycast(startPoint, direction, out hit, fireDistance))
         {
             // 레이가 어떤 물체와 충돌한 경우
 
@@ -103,7 +111,7 @@ public class Gun : MonoBehaviour
             {
                 DamageMessage damageMessage;
 
-                damageMessage.damager = this;
+                damageMessage.damager = gunHolder.gameObject;
                 damageMessage.amount = damage;
                 damageMessage.hitPoint = hit.point;
                 damageMessage.hitNormal = hit.normal;

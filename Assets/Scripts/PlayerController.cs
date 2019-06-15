@@ -25,28 +25,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (playerHealth.dead) return;
-        
-        if (playerInput.fire)
-        {
-            playerShooter.Shoot();
-        }
-        else if (playerInput.reload)
-        {
-            playerShooter.Reload();
-        }
     }
 
     private void FixedUpdate()
     {
-        if (playerHealth.dead) return;
-
-        if (playerMovement.currentSpeed > 0.2f)
-        {
-            playerMovement.Rotate();
-        }
-        
-        playerMovement.Move(playerInput.moveInput);
-        if(playerInput.jump) playerMovement.Jump();
     }
 
     private void HandleDeath()

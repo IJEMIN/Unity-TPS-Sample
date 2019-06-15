@@ -48,8 +48,6 @@ public class PlayerHealth : LivingEntity {
         {
             // 사망하지 않은 경우에만 효과음을 재생
             playerAudioPlayer.PlayOneShot(hitClip);
-            
-            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint,damageMessage.hitNormal,transform,EffectManager.EffectType.Flesh);
         }
 
         // LivingEntity의 OnDamage() 실행(데미지 적용)

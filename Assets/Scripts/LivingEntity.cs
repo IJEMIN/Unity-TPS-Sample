@@ -40,7 +40,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
     // 데미지를 입는 기능
     public virtual void ApplyDamage(DamageMessage damageMessage)
     {
-        if (IsInvulnerabe) return;
+        if (IsInvulnerabe || damageMessage.damager == gameObject) return;
 
         lastDamagedTime = Time.time;
 

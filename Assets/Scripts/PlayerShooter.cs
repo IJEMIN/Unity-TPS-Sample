@@ -6,25 +6,21 @@ using UnityEngine.UI;
 // 알맞은 애니메이션을 재생하고 IK를 사용해 캐릭터 양손이 총에 위치하도록 조정
 public class PlayerShooter : MonoBehaviour
 {
-
-    public bool isPlayer = false;
     public enum AimState { Idle, HipFire}
 
     private Camera playerCamera;
-    
     public AimState aimState { get; private set; }
 
     public LayerMask excludeTarget;
     
     public Gun gun; // 사용할 총
     public Transform leftHandMount; // 총의 왼쪽 손잡이, 왼손이 위치할 지점
-
-    private PlayerMovement _playerMovement;
-
+    
     private Animator playerAnimator; // 애니메이터 컴포넌트
 
     private Vector3 aimPoint;
 
+    private PlayerInput playerInput;
     public float AngleYBetweenPlayerAndCamera => playerCamera.transform.eulerAngles.y - transform.eulerAngles.y;
 
     private bool linedUp => !(Mathf.Abs(AngleYBetweenPlayerAndCamera) > 1f);
@@ -37,19 +33,18 @@ public class PlayerShooter : MonoBehaviour
         {
             excludeTarget |= (1 << gameObject.layer);
         }
-        
+
+        playerInput = GetComponent<PlayerInput>();
         playerCamera = Camera.main;
         // 사용할 컴포넌트들을 가져오기
         playerAnimator = GetComponent<Animator>();
-        _playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void OnEnable() {
-        
         // 슈터가 활성화될 때 총도 함께 활성화
-        gun.gameObject.SetActive(true);
-        gun.excludeTarget = excludeTarget;
         
+        gun.gameObject.SetActive(true);
+        gun.Setup(this);
     }
 
     private void OnDisable() {
@@ -57,14 +52,26 @@ public class PlayerShooter : MonoBehaviour
         gun.gameObject.SetActive(false);
     }
     
-    private void Update() {
+    private void FixedUpdate() {
+        
+        if (playerInput.fire)
+        {
+            Shoot();
+        }
+        else if (playerInput.reload)
+        {
+            Reload();
+        }
+    }
+
+    void Update()
+    {
         UpdateAimTarget();
         
         var angle = playerCamera.transform.eulerAngles.x;
         if (angle > 90f) angle -= 360f;
-        
         playerAnimator.SetFloat("Angle", angle / 90f);
-        
+
         UpdateUI();
     }
 
@@ -72,18 +79,13 @@ public class PlayerShooter : MonoBehaviour
     {
         if (aimState == AimState.Idle)
         {
-            if (!linedUp)
+            if (linedUp)
             {
-                _playerMovement.Rotate();
-                return;
+                aimState = AimState.HipFire;
             }
-
-            aimState = AimState.HipFire;
         }
         else if (aimState == AimState.HipFire)
         {
-            _playerMovement.Rotate();
-
             if (hasEnoughDistance)
             {
                 if(gun.Fire(aimPoint))
@@ -132,14 +134,12 @@ public class PlayerShooter : MonoBehaviour
         {
             aimPoint = lookPoint;
         }
+        
     }
 
     // 탄약 UI 갱신
     private void UpdateUI()
     {
-
-        if (!isPlayer) return;
-        
         if (gun != null && UIManager.instance != null)
         {
             // UI 매니저의 탄약 텍스트에 탄창의 탄약과 남은 전체 탄약을 표시
@@ -163,6 +163,5 @@ public class PlayerShooter : MonoBehaviour
             leftHandMount.position);
         playerAnimator.SetIKRotation(AvatarIKGoal.LeftHand,
             leftHandMount.rotation);
-
     }
 }
