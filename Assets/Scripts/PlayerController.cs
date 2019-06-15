@@ -21,20 +21,10 @@ public class PlayerController : MonoBehaviour
         playerHealth.onDeath += HandleDeath;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (playerHealth.dead) return;
-    }
-
-    private void FixedUpdate()
-    {
-    }
-
+    
     private void HandleDeath()
     {
         playerMovement.enabled = false;
         playerShooter.enabled = false;
-        animator.enabled = false;
     }
 }

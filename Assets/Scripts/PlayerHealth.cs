@@ -12,10 +12,12 @@ public class PlayerHealth : LivingEntity {
     private bool isPlayer = false;
 
     private AudioSource playerAudioPlayer; // 플레이어 소리 재생기
+    private Animator animator;
     
     private void Awake() {
         // 사용할 컴포넌트를 가져오기
         playerAudioPlayer = GetComponent<AudioSource>();
+        animator = GetComponent<Animator>();
     }
 
     protected override void OnEnable() {
@@ -66,6 +68,8 @@ public class PlayerHealth : LivingEntity {
         // 사망음 재생
         playerAudioPlayer.PlayOneShot(deathClip);
         // 애니메이터의 Die 트리거를 발동시켜 사망 애니메이션 재생
+        animator.SetTrigger("Die");
+        
     }
 
     private void OnTriggerEnter(Collider other) {

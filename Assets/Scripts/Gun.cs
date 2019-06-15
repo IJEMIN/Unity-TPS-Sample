@@ -43,6 +43,18 @@ public class Gun : MonoBehaviour
     public float reloadTime = 1.8f; // 재장전 소요 시간
     private float lastFireTime; // 총을 마지막으로 발사한 시점
 
+    [Range(0f, 10f)] public float maxSpread = 3f;
+    [Range(1f, 10f)] public float stability = 1f;
+    [Range(0.01f, 3f)] public float restoreFromRecoilSpeed = 2f;
+    private float spread
+    {
+        get { return m_spread; }
+        set { m_spread = Mathf.Clamp(value, 0, maxSpread); }
+    }
+    private float m_spread = 0f;
+    private float currentSpreadVelocity = 0f;    
+
+
     private void Awake()
     {
         // 사용할 컴포넌트들의 참조를 가져오기
@@ -62,6 +74,7 @@ public class Gun : MonoBehaviour
     }
     private void OnEnable()
     {
+        spread = 0;
         // 현재 탄창을 가득채우기
         magAmmo = magCapacity;
         // 총의 현재 상태를 총을 쏠 준비가 된 상태로 변경
@@ -78,10 +91,23 @@ public class Gun : MonoBehaviour
         if (state == State.Ready
             && Time.time >= lastFireTime + timeBetFire)
         {
+            
+            
+            float xError = GedRandomNormalDistribution(0f, spread);
+            float yError = GedRandomNormalDistribution(0f, spread);
+            
+
+            var fireDirection = aimTarget - fireTransform.position;
+            
+            fireDirection = Quaternion.AngleAxis(yError, Vector3.up) * fireDirection;
+            fireDirection = Quaternion.AngleAxis(xError, Vector3.right) * fireDirection;
+
+            spread += 1f/stability;
+
             // 마지막 총 발사 시점을 갱신
             lastFireTime = Time.time;
             // 실제 발사 처리 실행
-            Shot( fireTransform.position, aimTarget - fireTransform.position);
+            Shot( fireTransform.position, fireDirection);
 
             return true;
         }
@@ -98,7 +124,7 @@ public class Gun : MonoBehaviour
         Vector3 hitPosition = Vector3.zero;
 
         // 레이캐스트(시작지점, 방향, 충돌 정보 컨테이너, 사정거리)
-        if (Physics.Raycast(startPoint, direction, out hit, fireDistance))
+        if (Physics.Raycast(startPoint, direction, out hit, fireDistance,~excludeTarget))
         {
             // 레이가 어떤 물체와 충돌한 경우
 
@@ -215,5 +241,17 @@ public class Gun : MonoBehaviour
 
         // 총의 현재 상태를 발사 준비된 상태로 변경
         state = State.Ready;
+    }
+
+    void Update()
+    {
+        spread = Mathf.SmoothDamp(spread, 0f, ref currentSpreadVelocity, 1f/restoreFromRecoilSpeed);
+    }
+    
+    float GedRandomNormalDistribution(float mean, float standard)
+    {
+        var x1 = Random.Range(0f, 1f);
+        var x2 = Random.Range(0f, 1f);
+        return mean + standard * (Mathf.Sqrt(-2.0f * Mathf.Log(x1)) * Mathf.Sin(2.0f * Mathf.PI * x2));
     }
 }

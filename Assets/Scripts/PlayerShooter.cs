@@ -27,6 +27,7 @@ public class PlayerShooter : MonoBehaviour
 
     private bool hasEnoughDistance => !Physics.Linecast(transform.position + Vector3.up * 1.5f,gun.fireTransform.position,~excludeTarget);
 
+    
     private void Start()
     {
         if (excludeTarget != (excludeTarget | (1 << gameObject.layer)))

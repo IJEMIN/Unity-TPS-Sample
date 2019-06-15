@@ -126,6 +126,7 @@ public class Enemy : LivingEntity
         // 아직 사망하지 않은 경우에만 피격 효과 재생
         if (!dead)
         {
+            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint,damageMessage.hitNormal,transform,EffectManager.EffectType.Flesh);
             // 피격 효과음 재생
             if (hitSound != null) enemyAudioPlayer.PlayOneShot(hitSound);
         }
@@ -151,8 +152,7 @@ public class Enemy : LivingEntity
         pathFinder.enabled = false;
 
         // 사망 애니메이션 재생
-        //enemyAnimator?.SetTrigger("Die");
-        enemyAnimator.enabled = false;
+        enemyAnimator?.SetTrigger("Die");
         // 사망 효과음 재생
         if (deathSound != null) enemyAudioPlayer.PlayOneShot(deathSound);
     }
