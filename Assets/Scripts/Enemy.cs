@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; // AI, 내비게이션 시스템 관련 코드를 가져오기
 
@@ -8,7 +9,7 @@ public class Enemy : LivingEntity
     public LayerMask whatIsTarget; // 추적 대상 레이어
 
     public LivingEntity targetEntity; // 추적할 대상
-    private NavMeshAgent pathFinder; // 경로계산 AI 에이전트
+    private NavMeshAgent agent; // 경로계산 AI 에이전트
 
     public AudioClip deathSound; // 사망시 재생할 소리
     public AudioClip hitSound; // 피격시 재생할 소리
@@ -17,7 +18,19 @@ public class Enemy : LivingEntity
     private AudioSource enemyAudioPlayer; // 오디오 소스 컴포넌트
     private Renderer enemyRenderer; // 렌더러 컴포넌트
 
-    public float damage;
+    public float speed = 4f;
+    
+    public float damage = 30f;
+    
+    public Transform attackRoot;
+    public float attackRadius = 2f;
+
+    private float lastAttackTime;
+    public float timeBetAttack = 2.5f;
+
+    private float attackDistance;
+
+    private CharacterController characterController;
     
     // 추적할 대상이 존재하는지 알려주는 프로퍼티
     private bool hasTarget
@@ -35,27 +48,48 @@ public class Enemy : LivingEntity
         }
     }
 
+#if UNITY_EDITOR
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackRoot != null)
+        {
+            var worldPos = attackRoot.position;
+            Gizmos.color = new Color(1.0f, 0.2f, 0.2f, 0.6f);
+            Gizmos.DrawSphere(attackRoot.position, attackRadius);
+        }
+    }
+
+#endif
     private void Awake()
     {
+        characterController = GetComponent<CharacterController>();
+
         // 게임 오브젝트로부터 사용할 컴포넌트들을 가져오기
-        pathFinder = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
         enemyAnimator = GetComponent<Animator>();
         enemyAudioPlayer = GetComponent<AudioSource>();
 
         // 렌더러 컴포넌트는 자식 게임 오브젝트에게 있으므로
         // GetComponentInChildren() 메서드를 사용
         enemyRenderer = GetComponentInChildren<Renderer>();
+
+        attackDistance = Vector3.Distance(transform.position, new Vector3(attackRoot.position.x, transform.position.y, attackRoot.position.z)) + attackRadius;
+        attackDistance += agent.radius;
+        agent.stoppingDistance = attackDistance;
     }
 
     // 적 AI의 초기 스펙을 결정하는 셋업 메서드
     public void Setup(float newHealth, float newDamage,
         float newSpeed, Color skinColor)
     {
+
         // 체력 설정
         startingHealth = newHealth;
         health = newHealth;
         // 내비메쉬 에이전트의 이동 속도 설정
-        pathFinder.speed = newSpeed;
+        speed = newSpeed;
+        agent.speed = newSpeed;
         damage = newDamage;
         // 렌더러가 사용중인 머테리얼의 컬러를 변경, 외형 색이 변함
         enemyRenderer.material.color = skinColor;
@@ -69,6 +103,13 @@ public class Enemy : LivingEntity
 
     private void Update()
     {
+        if (dead) return;
+            
+        if (agent.remainingDistance <= attackDistance && lastAttackTime + timeBetAttack <= Time.time)
+        {
+            Attack();
+        }
+        
         // 추적 대상의 존재 여부에 따라 다른 애니메이션을 재생
         enemyAnimator?.SetBool("HasTarget", hasTarget);
     }
@@ -82,15 +123,10 @@ public class Enemy : LivingEntity
             if (hasTarget)
             {
                 // 추적 대상 존재 : 경로를 갱신하고 AI 이동을 계속 진행
-                pathFinder.isStopped = false;
-                pathFinder.SetDestination(
-                    targetEntity.transform.position);
+                agent.SetDestination(targetEntity.transform.position);
             }
             else
             {
-                // 추적 대상 없음 : AI 이동 중지
-                pathFinder.isStopped = true;
-
                 // 20 유닛의 반지름을 가진 가상의 구를 그렸을때, 구와 겹치는 모든 콜라이더를 가져옴
                 // 단, whatIsTarget 레이어를 가진 콜라이더만 가져오도록 필터링
                 Collider[] colliders = Physics.OverlapSphere(transform.position, 20f, whatIsTarget);
@@ -134,6 +170,32 @@ public class Enemy : LivingEntity
         base.ApplyDamage(damageMessage);
     }
 
+
+    public void Attack()
+    {
+        Debug.Log("Attack!!");
+        lastAttackTime = Time.time;
+        enemyAnimator.SetTrigger("Attack");
+
+        RaycastHit[] hits = Physics.SphereCastAll(attackRoot.position, attackRadius, transform.forward, agent.speed * Time.deltaTime,whatIsTarget);
+
+        foreach (var hit in hits)
+        {
+            var attackTargetEntity = hit.collider.GetComponent<LivingEntity>();
+            if (attackTargetEntity != null)
+            {
+                DamageMessage message = new DamageMessage();
+                message.amount = damage;
+                message.damager = gameObject;
+                message.hitNormal = hit.normal;
+                message.hitPoint = hit.point;
+                    
+                attackTargetEntity.ApplyDamage(message);
+                break;
+            }
+        }
+    }
+    
     // 사망 처리
     public override void Die()
     {
@@ -148,8 +210,7 @@ public class Enemy : LivingEntity
         }
 
         // AI 추적을 중지하고 내비메쉬 컴포넌트를 비활성화
-        pathFinder.isStopped = true;
-        pathFinder.enabled = false;
+        agent.enabled = false;
 
         // 사망 애니메이션 재생
         enemyAnimator?.SetTrigger("Die");

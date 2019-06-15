@@ -49,6 +49,7 @@ public class PlayerHealth : LivingEntity {
         if (!dead)
         {
             // 사망하지 않은 경우에만 효과음을 재생
+            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint,damageMessage.hitNormal,transform, EffectManager.EffectType.Flesh);
             playerAudioPlayer.PlayOneShot(hitClip);
         }
 
