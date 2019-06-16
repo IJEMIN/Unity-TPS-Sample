@@ -32,11 +32,7 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-    private void Start() {
-        // 플레이어 캐릭터의 사망 이벤트 발생시 게임 오버
-        FindObjectOfType<PlayerHealth>().onDeath += EndGame;
-    }
+    
 
 
     // 점수를 추가하고 UI 갱신

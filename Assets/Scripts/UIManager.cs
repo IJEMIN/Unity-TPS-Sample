@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour {
     public Text scoreText; // 점수 표시용 텍스트
     public Text waveText; // 적 웨이브 표시용 텍스트
     public Text healthText;
+    public Text lifeText;
     
     public GameObject gameoverUI; // 게임 오버시 활성화할 UI 
     public Crosshair crosshair;
@@ -43,6 +44,11 @@ public class UIManager : MonoBehaviour {
     public void UpdateWaveText(int waves, int count) {
         waveText.text = "Wave : " + waves + "\nEnemy Left : " + count;
     }
+    
+    public void UpdateLifeText(int count) {
+        lifeText.text = "Life : " + count;
+    }
+
 
     // 게임 오버 UI 활성화
     public void SetActiveGameoverUI(bool active) {

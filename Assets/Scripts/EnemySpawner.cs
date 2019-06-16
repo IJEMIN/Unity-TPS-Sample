@@ -51,7 +51,7 @@ public class EnemySpawner : MonoBehaviour {
         wave++;
 
         // 현재 웨이브 * 1.5에 반올림 한 개수 만큼 적을 생성
-        int spawnCount = Mathf.RoundToInt(wave * 1.5f);
+        int spawnCount = Mathf.RoundToInt(wave * 5f);
 
         // spawnCount 만큼 적을 생성
         for (int i = 0; i < spawnCount; i++)
