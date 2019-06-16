@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI; // AI, 내비게이션 시스템 관련 코드를 가져오기
 
@@ -18,6 +19,9 @@ public class Enemy : LivingEntity
     private AudioSource enemyAudioPlayer; // 오디오 소스 컴포넌트
     private Renderer enemyRenderer; // 렌더러 컴포넌트
 
+
+    [Range(0,10)] public float smoothingSpeed = 1f;
+    
     public float speed = 4f;
     
     public float damage = 30f;
@@ -26,11 +30,15 @@ public class Enemy : LivingEntity
     public float attackRadius = 2f;
 
     private float lastAttackTime;
-    public float timeBetAttack = 2.5f;
+    public float timeBetAttack = 3f;
 
     private float attackDistance;
+    
+    private enum State {Patrol, Tracking, AttackBegin, Attacking }
 
-    private CharacterController characterController;
+    private State state;
+
+    private List<LivingEntity> lastAttackedTargets = new List<LivingEntity>();
     
     // 추적할 대상이 존재하는지 알려주는 프로퍼티
     private bool hasTarget
@@ -63,8 +71,6 @@ public class Enemy : LivingEntity
 #endif
     private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
-
         // 게임 오브젝트로부터 사용할 컴포넌트들을 가져오기
         agent = GetComponent<NavMeshAgent>();
         enemyAnimator = GetComponent<Animator>();
@@ -76,6 +82,7 @@ public class Enemy : LivingEntity
 
         attackDistance = Vector3.Distance(transform.position, new Vector3(attackRoot.position.x, transform.position.y, attackRoot.position.z)) + attackRadius;
         attackDistance += agent.radius;
+
         agent.stoppingDistance = attackDistance;
     }
 
@@ -104,14 +111,59 @@ public class Enemy : LivingEntity
     private void Update()
     {
         if (dead) return;
-            
-        if (agent.remainingDistance <= attackDistance && lastAttackTime + timeBetAttack <= Time.time)
+
+        if ((state == State.Tracking) &&
+            Vector3.Distance(targetEntity.transform.position, transform.position) <= attackDistance)
         {
-            Attack();
+            BeginAttack();
         }
         
         // 추적 대상의 존재 여부에 따라 다른 애니메이션을 재생
-        enemyAnimator?.SetBool("HasTarget", hasTarget);
+        enemyAnimator?.SetFloat("Speed", agent.desiredVelocity.magnitude);
+    }
+
+    private RaycastHit[] hits  = new RaycastHit[10];
+    private void FixedUpdate()
+    {
+        if (dead) return;
+
+        if (state == State.AttackBegin || state == State.Attacking)
+        {
+            
+            var lookRotation =  Quaternion.LookRotation(targetEntity.transform.position - transform.position, Vector3.up);
+            var smoothedRotation = Quaternion.Lerp(transform.rotation, lookRotation, smoothingSpeed * Time.deltaTime);
+            transform.rotation = smoothedRotation;
+        }
+        
+        if(state == State.Attacking)
+        {
+            var direction = transform.forward;
+            var deltaDistance = agent.velocity.magnitude * Time.deltaTime;
+
+            var size = Physics.SphereCastNonAlloc(attackRoot.position, attackRadius, direction, hits, deltaDistance,whatIsTarget);
+
+            for (var i = 0; i < size; i++)
+            {
+                var attackTargetEntity = hits[i].collider.GetComponent<LivingEntity>();
+                
+                if (attackTargetEntity != null && !lastAttackedTargets.Contains(attackTargetEntity))
+                {
+                    DamageMessage message = new DamageMessage();
+                    message.amount = damage;
+                    message.damager = gameObject;
+                    message.hitPoint = attackRoot.TransformPoint(hits[i].point);
+                    message.hitNormal = attackRoot.TransformDirection(hits[i].normal);
+                    
+                    attackTargetEntity.ApplyDamage(message);
+                    
+                    lastAttackedTargets.Add(attackTargetEntity);
+                    break;
+                }
+                    
+            }
+            
+    
+        }
     }
 
     // 주기적으로 추적할 대상의 위치를 찾아 경로를 갱신
@@ -122,11 +174,14 @@ public class Enemy : LivingEntity
         {
             if (hasTarget)
             {
+                if(state == State.Patrol) state = State.Tracking;
                 // 추적 대상 존재 : 경로를 갱신하고 AI 이동을 계속 진행
                 agent.SetDestination(targetEntity.transform.position);
             }
             else
             {
+                state = State.Patrol;
+                
                 // 20 유닛의 반지름을 가진 가상의 구를 그렸을때, 구와 겹치는 모든 콜라이더를 가져옴
                 // 단, whatIsTarget 레이어를 가진 콜라이더만 가져오도록 필터링
                 Collider[] colliders = Physics.OverlapSphere(transform.position, 20f, whatIsTarget);
@@ -149,8 +204,8 @@ public class Enemy : LivingEntity
                 }
             }
 
-            // 0.25초 주기로 처리 반복
-            yield return new WaitForSeconds(0.25f);
+            // 0.1 초 주기로 처리 반복
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -170,30 +225,27 @@ public class Enemy : LivingEntity
         base.ApplyDamage(damageMessage);
     }
 
-
-    public void Attack()
+    public void BeginAttack()
     {
-        Debug.Log("Attack!!");
+        agent.isStopped = true;
+
         lastAttackTime = Time.time;
+
+        state = State.AttackBegin;
+        
         enemyAnimator.SetTrigger("Attack");
+    }
+    
+    public void EnableAttack()
+    {
+        lastAttackedTargets.Clear();
+        state = State.Attacking;
+    }
 
-        RaycastHit[] hits = Physics.SphereCastAll(attackRoot.position, attackRadius, transform.forward, agent.speed * Time.deltaTime,whatIsTarget);
-
-        foreach (var hit in hits)
-        {
-            var attackTargetEntity = hit.collider.GetComponent<LivingEntity>();
-            if (attackTargetEntity != null)
-            {
-                DamageMessage message = new DamageMessage();
-                message.amount = damage;
-                message.damager = gameObject;
-                message.hitNormal = hit.normal;
-                message.hitPoint = hit.point;
-                    
-                attackTargetEntity.ApplyDamage(message);
-                break;
-            }
-        }
+    public void DisableAttack()
+    {
+        agent.isStopped = false;
+        state = State.Tracking;
     }
     
     // 사망 처리
@@ -212,6 +264,7 @@ public class Enemy : LivingEntity
         // AI 추적을 중지하고 내비메쉬 컴포넌트를 비활성화
         agent.enabled = false;
 
+        enemyAnimator.applyRootMotion = true;
         // 사망 애니메이션 재생
         enemyAnimator?.SetTrigger("Die");
         // 사망 효과음 재생

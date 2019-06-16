@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         m_CharacterFollowCam = Camera.main;
         m_CharacterController = GetComponent<CharacterController>();
+        
     }
 
     private void FixedUpdate()
@@ -66,9 +67,8 @@ public class PlayerMovement : MonoBehaviour
     public void Rotate()
     {
         var targetRotation = m_CharacterFollowCam.transform.eulerAngles.y;
-        var smoothTime = m_CharacterController.isGrounded ? turnSmoothTime : turnSmoothTime / airControlPercent;
 
-        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, smoothTime);
+        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
     }
 
     public void Jump()

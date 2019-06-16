@@ -36,7 +36,7 @@ public class EffectManager : MonoBehaviour
 
         if (parent != null)
         {
-            effect.transform.parent = parent;
+            effect.transform.SetParent(parent);
         }
         effect.Play();
     }

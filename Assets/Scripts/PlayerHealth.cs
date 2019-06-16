@@ -8,9 +8,7 @@ public class PlayerHealth : LivingEntity {
     public AudioClip deathClip; // 사망 소리
     public AudioClip hitClip; // 피격 소리
     public AudioClip itemPickupClip; // 아이템 습득 소리
-
-    private bool isPlayer = false;
-
+    
     private AudioSource playerAudioPlayer; // 플레이어 소리 재생기
     private Animator animator;
     
@@ -36,7 +34,6 @@ public class PlayerHealth : LivingEntity {
 
     void UpdateUI()
     {
-        if (!isPlayer) return;
 
         UIManager.instance.UpdateHealthText(dead ? 0f : health);
     }
@@ -49,7 +46,7 @@ public class PlayerHealth : LivingEntity {
         if (!dead)
         {
             // 사망하지 않은 경우에만 효과음을 재생
-            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint,damageMessage.hitNormal,transform, EffectManager.EffectType.Flesh);
+            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint,damageMessage.hitNormal, transform, EffectManager.EffectType.Flesh);
             playerAudioPlayer.PlayOneShot(hitClip);
         }
 
