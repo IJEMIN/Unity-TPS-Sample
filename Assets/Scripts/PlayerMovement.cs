@@ -2,29 +2,27 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 6f;
+    [Range(0.01f, 1f)] public float airControlPercent;
+
+    private float currentVelocityY;
     public float jumpVelocity = 20f;
 
-    [Range(0.01f, 1f)] public float airControlPercent;
-    public float turnSmoothTime = 0.2f;
-    private float turnSmoothVelocity;
+    private Animator m_Animator;
+
+    private CharacterController m_CharacterController;
+    private Camera m_CharacterFollowCam;
+
+    private PlayerInput playerInput;
+    public float speed = 6f;
 
     public float speedSmoothTime = 0.1f;
     private float speedSmoothVelocity;
+    public float turnSmoothTime = 0.2f;
+    private float turnSmoothVelocity;
 
     public float currentSpeed =>
         new Vector2(m_CharacterController.velocity.x, m_CharacterController.velocity.z).magnitude;
 
-    private float currentVelocityY;
-
-    private Animator m_Animator;
-    private Camera m_CharacterFollowCam;
-
-    private CharacterController m_CharacterController;
-
-    private PlayerInput playerInput;
-    
-    
 
     private void Start()
     {
@@ -32,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         m_CharacterFollowCam = Camera.main;
         m_CharacterController = GetComponent<CharacterController>();
-        
     }
 
     private void FixedUpdate()
@@ -68,7 +65,8 @@ public class PlayerMovement : MonoBehaviour
     {
         var targetRotation = m_CharacterFollowCam.transform.eulerAngles.y;
 
-        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
+        transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation,
+                                    ref turnSmoothVelocity, turnSmoothTime);
     }
 
     public void Jump()

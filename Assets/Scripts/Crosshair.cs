@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Crosshair : MonoBehaviour
 {
-    public Image reticle;
-    public Image lookPoint;
-
     private RectTransform crossHairRectTransform;
-
-    private Vector2 targetPoint;
+    public Image lookPoint;
     private Vector3 m_CurrentVelocity;
+    public Image reticle;
 
     private Camera screenCamera;
 
     public float smoothTime = 10f;
-    
+
+    private Vector2 targetPoint;
+
     private void Awake()
     {
         screenCamera = Camera.main;
@@ -37,9 +33,9 @@ public class Crosshair : MonoBehaviour
 
     private void Update()
     {
-        if (reticle.enabled)
-        {
-            crossHairRectTransform.position = Vector3.SmoothDamp(crossHairRectTransform.position, targetPoint, ref m_CurrentVelocity, smoothTime* Time.deltaTime);
-        }
+        if (!reticle.enabled) return;
+
+        crossHairRectTransform.position = Vector3.SmoothDamp(crossHairRectTransform.position, targetPoint,
+            ref m_CurrentVelocity, smoothTime * Time.deltaTime);
     }
 }

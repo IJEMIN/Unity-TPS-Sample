@@ -1,33 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Experimental.PlayerLoop;
 
 public class PlayerController : MonoBehaviour
 {
+    private Animator animator;
+    public AudioClip itemPickupClip;
     public int lifeRemains = 3;
+    private AudioSource playerAudioPlayer;
+    private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private PlayerShooter playerShooter;
-    private PlayerHealth playerHealth;
-    private Animator animator;
-    private AudioSource playerAudioPlayer;
-    public AudioClip itemPickupClip;
-    
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerShooter = GetComponent<PlayerShooter>();
         playerHealth = GetComponent<PlayerHealth>();
         playerAudioPlayer = GetComponent<AudioSource>();
         playerHealth.onDeath += HandleDeath;
-        
+
         UIManager.instance.UpdateLifeText(lifeRemains);
     }
 
-    
+
     private void HandleDeath()
     {
         playerMovement.enabled = false;
@@ -56,15 +52,16 @@ public class PlayerController : MonoBehaviour
 
         playerShooter.gun.ammoRemain = 120;
     }
-    
-    
-    private void OnTriggerEnter(Collider other) {
+
+
+    private void OnTriggerEnter(Collider other)
+    {
         // 아이템과 충돌한 경우 해당 아이템을 사용하는 처리
         // 사망하지 않은 경우에만 아이템 사용가능
         if (!playerHealth.dead)
         {
             // 충돌한 상대방으로 부터 Item 컴포넌트를 가져오기 시도
-            IItem item = other.GetComponent<IItem>();
+            var item = other.GetComponent<IItem>();
 
             // 충돌한 상대방으로부터 Item 컴포넌트가 가져오는데 성공했다면
             if (item != null)
@@ -76,5 +73,4 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    
 }

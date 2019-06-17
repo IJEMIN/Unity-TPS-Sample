@@ -12,50 +12,43 @@ using UnityEditor;
 // 적 AI를 구현한다
 public class Enemy : LivingEntity
 {
-    public LayerMask whatIsTarget; // 추적 대상 레이어
-
-    [HideInInspector] public LivingEntity targetEntity; // 추적할 대상
-    private NavMeshAgent agent; // 경로계산 AI 에이전트
-
-    public AudioClip deathClip; // 사망시 재생할 소리
-    public AudioClip hitClip; // 피격시 재생할 소리
-
-    private Animator animator; // 애니메이터 컴포넌트
-    private AudioSource audioPlayer; // 오디오 소스 컴포넌트
-    private Renderer skinRenderer; // 렌더러 컴포넌트
-
-    public Transform eyeTransform;
-    public float viewDistance = 10f;
-    
-    public float fieldOfView = 50f;
-
-    [Range(0.01f, 2f)] public float turnSmoothTime = 0.1f;
-    
-    public float damage = 30f;
-    public float patrolSpeed = 3f;
-
-    public float runSpeed  = 10f;
-
     private const float timeBetUpdatePath = 0.15f;
 
-    public Transform attackRoot;
-    public float attackRadius = 2f;
+    private readonly RaycastHit[] hits = new RaycastHit[10];
+
+    private readonly List<LivingEntity> lastAttackedTargets = new List<LivingEntity>();
+    private NavMeshAgent agent; // 경로계산 AI 에이전트
+
+    private Animator animator; // 애니메이터 컴포넌트
 
     private float attackDistance;
+    public float attackRadius = 2f;
 
-    private float turnSmoothVelocity;
+    public Transform attackRoot;
+    private AudioSource audioPlayer; // 오디오 소스 컴포넌트
 
-    private enum State
-    {
-        Patrol,
-        Tracking,
-        AttackBegin,
-        Attacking
-    }
+    public float damage = 30f;
+
+    public AudioClip deathClip; // 사망시 재생할 소리
+
+    public Transform eyeTransform;
+
+    public float fieldOfView = 50f;
+    public AudioClip hitClip; // 피격시 재생할 소리
+    public float patrolSpeed = 3f;
+
+    public float runSpeed = 10f;
+    private Renderer skinRenderer; // 렌더러 컴포넌트
 
     private State state;
 
-    private readonly List<LivingEntity> lastAttackedTargets = new List<LivingEntity>();
+    [HideInInspector] public LivingEntity targetEntity; // 추적할 대상
+
+    [Range(0.01f, 2f)] public float turnSmoothTime = 0.1f;
+
+    private float turnSmoothVelocity;
+    public float viewDistance = 10f;
+    public LayerMask whatIsTarget; // 추적 대상 레이어
 
     // 추적할 대상이 존재하는지 알려주는 프로퍼티
     private bool hasTarget => targetEntity != null && !targetEntity.dead;
@@ -105,7 +98,7 @@ public class Enemy : LivingEntity
         // 체력 설정
         startingHealth = newHealth;
         health = newHealth;
-        
+
         // 내비메쉬 에이전트의 이동 속도 설정
         runSpeed = newRunSpeed;
         damage = newDamage;
@@ -125,15 +118,11 @@ public class Enemy : LivingEntity
 
         if (state == State.Tracking &&
             Vector3.Distance(targetEntity.transform.position, transform.position) <= attackDistance)
-        {
             BeginAttack();
-        }
 
         // 추적 대상의 존재 여부에 따라 다른 애니메이션을 재생
         animator.SetFloat("Speed", agent.desiredVelocity.magnitude);
     }
-
-    private readonly RaycastHit[] hits = new RaycastHit[10];
 
     private void FixedUpdate()
     {
@@ -142,10 +131,12 @@ public class Enemy : LivingEntity
 
         if (state == State.AttackBegin || state == State.Attacking)
         {
-            var lookRotation = Quaternion.LookRotation(targetEntity.transform.position - transform.position, Vector3.up);
+            var lookRotation =
+                Quaternion.LookRotation(targetEntity.transform.position - transform.position, Vector3.up);
             var targetAngleY = lookRotation.eulerAngles.y;
-            
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngleY, ref turnSmoothVelocity, turnSmoothTime);
+
+            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngleY,
+                                        ref turnSmoothVelocity, turnSmoothTime);
         }
 
         if (state == State.Attacking)
@@ -190,20 +181,21 @@ public class Enemy : LivingEntity
                     state = State.Tracking;
                     agent.speed = runSpeed;
                 }
+
                 // 추적 대상 존재 : 경로를 갱신하고 AI 이동을 계속 진행
                 agent.SetDestination(targetEntity.transform.position);
             }
             else
             {
                 if (targetEntity != null) targetEntity = null;
-                
+
                 if (state != State.Patrol)
                 {
                     state = State.Patrol;
                     agent.speed = patrolSpeed;
                 }
 
-                
+
                 if (agent.remainingDistance <= 2f)
                 {
                     var patrolPosition = Utils.GetRandomPointOnNavMesh(transform.position, 20f, NavMesh.AllAreas);
@@ -247,12 +239,9 @@ public class Enemy : LivingEntity
         // 아직 사망하지 않은 경우에만 피격 효과 재생
         if (!dead)
         {
-            if(targetEntity == null)
-            {
-                targetEntity = damageMessage.damager.GetComponent<LivingEntity>();
-            }
-            
-            
+            if (targetEntity == null) targetEntity = damageMessage.damager.GetComponent<LivingEntity>();
+
+
             EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint, damageMessage.hitNormal, transform,
                 EffectManager.EffectType.Flesh);
             // 피격 효과음 재생
@@ -316,5 +305,13 @@ public class Enemy : LivingEntity
         animator?.SetTrigger("Die");
         // 사망 효과음 재생
         if (deathClip != null) audioPlayer.PlayOneShot(deathClip);
+    }
+
+    private enum State
+    {
+        Patrol,
+        Tracking,
+        AttackBegin,
+        Attacking
     }
 }

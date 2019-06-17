@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class IKTargetTracker : MonoBehaviour
 {
+    private Animator animator;
     [SerializeField] private AvatarIKGoal targetIK;
     [SerializeField] private Transform targetTransform;
 
-    private Animator animator;
-
-    void Start()
+    private void Start()
     {
         animator = GetComponent<Animator>();
     }
