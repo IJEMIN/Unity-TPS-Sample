@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class FixedUpdateFollow : MonoBehaviour
+public class LateUpdateFollow : MonoBehaviour
 {
     public Transform targetToFollow;
 

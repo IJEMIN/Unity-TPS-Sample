@@ -2,17 +2,7 @@
 
 public class EffectManager : MonoBehaviour
 {
-    public enum EffectType
-    {
-        Common,
-        Flesh
-    }
-
     private static EffectManager m_Instance;
-
-    public ParticleSystem commonHitEffectPrefab;
-    public ParticleSystem fleshHitEffectPrefab;
-
     public static EffectManager Instance
     {
         get
@@ -22,16 +12,28 @@ public class EffectManager : MonoBehaviour
         }
     }
 
-    public void PlayHitEffect(Vector3 pos, Vector3 normal, Transform parent = null,
-        EffectType effectType = EffectType.Common)
+    public enum EffectType
+    {
+        Common,
+        Flesh
+    }
+    
+    public ParticleSystem commonHitEffectPrefab;
+    public ParticleSystem fleshHitEffectPrefab;
+    
+    public void PlayHitEffect(Vector3 pos, Vector3 normal, Transform parent = null, EffectType effectType = EffectType.Common)
     {
         var targetPrefab = commonHitEffectPrefab;
 
-        if (effectType == EffectType.Flesh) targetPrefab = fleshHitEffectPrefab;
+        if (effectType == EffectType.Flesh)
+        {
+            targetPrefab = fleshHitEffectPrefab;
+        }
 
         var effect = Instantiate(targetPrefab, pos, Quaternion.LookRotation(normal));
 
         if (parent != null) effect.transform.SetParent(parent);
+        
         effect.Play();
     }
 }

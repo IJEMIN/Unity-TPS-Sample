@@ -31,12 +31,14 @@ public class Gun : MonoBehaviour
     private PlayerShooter gunHolder;
     private float lastFireTime; // 총을 마지막으로 발사한 시점
 
-    private float m_spread;
     public int magAmmo; // 현재 탄창에 남아있는 탄약
     public int magCapacity = 25; // 탄창 용량
 
+    
     [Range(0f, 10f)] public float maxSpread = 3f;
+    private float spread;
 
+    
     public ParticleSystem muzzleFlashEffect; // 총구 화염 효과
     public AudioClip reloadClip; // 재장전 소리
     public float reloadTime = 1.8f; // 재장전 소요 시간
@@ -49,13 +51,7 @@ public class Gun : MonoBehaviour
     public float timeBetFire = 0.12f; // 총알 발사 간격
     public State state { get; private set; } // 현재 총의 상태
 
-    private float spread
-    {
-        get => m_spread;
-        set => m_spread = Mathf.Clamp(value, 0, maxSpread);
-    }
-
-
+    
     private void Awake()
     {
         // 사용할 컴포넌트들의 참조를 가져오기
@@ -93,8 +89,8 @@ public class Gun : MonoBehaviour
         if (state == State.Ready
             && Time.time >= lastFireTime + timeBetFire)
         {
-            var xError = GedRandomNormalDistribution(0f, spread);
-            var yError = GedRandomNormalDistribution(0f, spread);
+            var xError = Utils.GedRandomNormalDistribution(0f, spread);
+            var yError = Utils.GedRandomNormalDistribution(0f, spread);
 
 
             var fireDirection = aimTarget - fireTransform.position;
@@ -239,12 +235,6 @@ public class Gun : MonoBehaviour
     private void Update()
     {
         spread = Mathf.SmoothDamp(spread, 0f, ref currentSpreadVelocity, 1f / restoreFromRecoilSpeed);
-    }
-
-    private float GedRandomNormalDistribution(float mean, float standard)
-    {
-        var x1 = Random.Range(0f, 1f);
-        var x2 = Random.Range(0f, 1f);
-        return mean + standard * (Mathf.Sqrt(-2.0f * Mathf.Log(x1)) * Mathf.Sin(2.0f * Mathf.PI * x2));
+        spread = Mathf.Clamp(spread, 0f, maxSpread);
     }
 }

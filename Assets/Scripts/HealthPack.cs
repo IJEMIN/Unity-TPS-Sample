@@ -13,7 +13,9 @@ public class HealthPack : MonoBehaviour, IItem
         // LivingEntity컴포넌트가 있다면
         if (life != null)
             // 체력 회복 실행
+        {
             life.RestoreHealth(health);
+        }
 
         // 사용되었으므로, 자신을 파괴
         Destroy(gameObject);

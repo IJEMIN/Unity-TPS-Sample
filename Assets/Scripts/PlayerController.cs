@@ -18,9 +18,9 @@ public class PlayerController : MonoBehaviour
         playerShooter = GetComponent<PlayerShooter>();
         playerHealth = GetComponent<PlayerHealth>();
         playerAudioPlayer = GetComponent<AudioSource>();
-        playerHealth.onDeath += HandleDeath;
+        playerHealth.OnDeath += HandleDeath;
 
-        UIManager.instance.UpdateLifeText(lifeRemains);
+        UIManager.Instance.UpdateLifeText(lifeRemains);
         Cursor.visible = false;
         
     }
@@ -33,12 +33,12 @@ public class PlayerController : MonoBehaviour
         if (lifeRemains > 0)
         {
             lifeRemains--;
-            UIManager.instance.UpdateLifeText(lifeRemains);
+            UIManager.Instance.UpdateLifeText(lifeRemains);
             Invoke("Respawn", 3f);
         }
         else
         {
-            GameManager.instance.EndGame();
+            GameManager.Instance.EndGame();
         }
         
         Cursor.visible = true;

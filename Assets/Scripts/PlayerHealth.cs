@@ -37,7 +37,7 @@ public class PlayerHealth : LivingEntity
 
     private void UpdateUI()
     {
-        UIManager.instance.UpdateHealthText(dead ? 0f : health);
+        UIManager.Instance.UpdateHealthText(dead ? 0f : health);
     }
 
     // 데미지 처리

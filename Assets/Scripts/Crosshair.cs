@@ -3,27 +3,27 @@ using UnityEngine.UI;
 
 public class Crosshair : MonoBehaviour
 {
-    private RectTransform crossHairRectTransform;
-    public Image lookPoint;
-    private Vector3 m_CurrentVelocity;
-    public Image reticle;
-
-    private Camera screenCamera;
+    public Image aimPointReticle;
+    public Image hitPointReticle;
 
     public float smoothTime = 10f;
+    
+    private Camera screenCamera;
+    private RectTransform crossHairRectTransform;
 
+    private Vector3 currentHitPointVelocity;
     private Vector2 targetPoint;
 
     private void Awake()
     {
         screenCamera = Camera.main;
-        crossHairRectTransform = reticle.GetComponent<RectTransform>();
+        crossHairRectTransform = hitPointReticle.GetComponent<RectTransform>();
     }
 
-    public void SetActiveReticle(bool active)
+    public void SetActiveCrosshair(bool active)
     {
-        reticle.enabled = active;
-        lookPoint.enabled = active;
+        hitPointReticle.enabled = active;
+        aimPointReticle.enabled = active;
     }
 
     public void UpdatePosition(Vector3 worldPoint)
@@ -33,9 +33,9 @@ public class Crosshair : MonoBehaviour
 
     private void Update()
     {
-        if (!reticle.enabled) return;
+        if (!hitPointReticle.enabled) return;
 
         crossHairRectTransform.position = Vector3.SmoothDamp(crossHairRectTransform.position, targetPoint,
-            ref m_CurrentVelocity, smoothTime * Time.deltaTime);
+            ref currentHitPointVelocity, smoothTime * Time.deltaTime);
     }
 }

@@ -125,13 +125,13 @@ public class PlayerShooter : MonoBehaviour
     // 탄약 UI 갱신
     private void UpdateUI()
     {
-        if (gun == null || UIManager.instance == null) return;
+        if (gun == null || UIManager.Instance == null) return;
         
         // UI 매니저의 탄약 텍스트에 탄창의 탄약과 남은 전체 탄약을 표시
-        UIManager.instance.UpdateAmmoText(gun.magAmmo, gun.ammoRemain);
+        UIManager.Instance.UpdateAmmoText(gun.magAmmo, gun.ammoRemain);
         
-        UIManager.instance.SetActiveCrosshair(hasEnoughDistance);
-        UIManager.instance.UpdateCrossHairPosition(aimPoint);
+        UIManager.Instance.SetActiveCrosshair(hasEnoughDistance);
+        UIManager.Instance.UpdateCrossHairPosition(aimPoint);
     }
 
     // 애니메이터의 IK 갱신

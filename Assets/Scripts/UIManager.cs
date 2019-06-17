@@ -4,27 +4,27 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    private static UIManager m_instance;
-
-    public GameObject gameoverUI;
-    public Crosshair crosshair;
-
-    public Text healthText;
-    public Text lifeText;
-    public Text scoreText;
-    public Text ammoText;
-    public Text waveText; 
+    private static UIManager instance;
     
-    public static UIManager instance
+    public static UIManager Instance
     {
         get
         {
-            if (m_instance == null) m_instance = FindObjectOfType<UIManager>();
+            if (instance == null) instance = FindObjectOfType<UIManager>();
 
-            return m_instance;
+            return instance;
         }
     }
-    
+
+    [SerializeField] private GameObject gameoverUI;
+    [SerializeField] private Crosshair crosshair;
+
+    [SerializeField] private Text healthText;
+    [SerializeField] private Text lifeText;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private Text ammoText;
+    [SerializeField] private Text waveText;
+
     public void UpdateAmmoText(int magAmmo, int remainAmmo)
     {
         ammoText.text = magAmmo + "/" + remainAmmo;
@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour
     
     public void SetActiveCrosshair(bool active)
     {
-        crosshair.SetActiveReticle(active);
+        crosshair.SetActiveCrosshair(active);
     }
     
     public void SetActiveGameoverUI(bool active)

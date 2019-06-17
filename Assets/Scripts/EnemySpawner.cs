@@ -24,7 +24,7 @@ public class EnemySpawner : MonoBehaviour
     private void Update()
     {
         // 게임 오버 상태일때는 생성하지 않음
-        if (GameManager.instance != null && GameManager.instance.isGameover) return;
+        if (GameManager.Instance != null && GameManager.Instance.isGameover) return;
 
         // 적을 모두 물리친 경우 다음 스폰 실행
         if (enemies.Count <= 0) SpawnWave();
@@ -37,7 +37,7 @@ public class EnemySpawner : MonoBehaviour
     private void UpdateUI()
     {
         // 현재 웨이브와 남은 적의 수 표시
-        UIManager.instance.UpdateWaveText(wave, enemies.Count);
+        UIManager.Instance.UpdateWaveText(wave, enemies.Count);
     }
 
     // 현재 웨이브에 맞춰 적을 생성
@@ -84,10 +84,10 @@ public class EnemySpawner : MonoBehaviour
 
         // 적의 onDeath 이벤트에 익명 메서드 등록
         // 사망한 적을 리스트에서 제거
-        enemy.onDeath += () => enemies.Remove(enemy);
+        enemy.OnDeath += () => enemies.Remove(enemy);
         // 사망한 적을 10 초 뒤에 파괴
-        enemy.onDeath += () => Destroy(enemy.gameObject, 10f);
+        enemy.OnDeath += () => Destroy(enemy.gameObject, 10f);
         // 적 사망시 점수 상승
-        enemy.onDeath += () => GameManager.instance.AddScore(100);
+        enemy.OnDeath += () => GameManager.Instance.AddScore(100);
     }
 }
