@@ -32,7 +32,6 @@ public class LivingEntity : MonoBehaviour, IDamageable
 
         // 데미지만큼 체력 감소
         health -= damageMessage.amount;
-        Debug.Log(health);
 
         // 체력이 0 이하 && 아직 죽지 않았다면 사망 처리 실행
         if (health <= 0 && !dead) Die();

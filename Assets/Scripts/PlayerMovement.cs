@@ -7,29 +7,30 @@ public class PlayerMovement : MonoBehaviour
     private float currentVelocityY;
     public float jumpVelocity = 20f;
 
-    private Animator m_Animator;
+    private Animator animator;
 
-    private CharacterController m_CharacterController;
-    private Camera m_CharacterFollowCam;
+    private CharacterController characterController;
+    private Camera followCam;
 
     private PlayerInput playerInput;
     public float speed = 6f;
 
     public float speedSmoothTime = 0.1f;
+    public float turnSmoothTime = 0.1f;
+    
     private float speedSmoothVelocity;
-    public float turnSmoothTime = 0.2f;
     private float turnSmoothVelocity;
 
     public float currentSpeed =>
-        new Vector2(m_CharacterController.velocity.x, m_CharacterController.velocity.z).magnitude;
+        new Vector2(characterController.velocity.x, characterController.velocity.z).magnitude;
 
 
     private void Start()
     {
-        m_Animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         playerInput = GetComponent<PlayerInput>();
-        m_CharacterFollowCam = Camera.main;
-        m_CharacterController = GetComponent<CharacterController>();
+        followCam = Camera.main;
+        characterController = GetComponent<CharacterController>();
     }
 
     private void FixedUpdate()
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
         if (currentSpeed > 0.2f || playerInput.fire) Rotate();
 
         Move(playerInput.moveInput);
+        
         if (playerInput.jump) Jump();
     }
 
@@ -49,21 +51,22 @@ public class PlayerMovement : MonoBehaviour
     {
         var targetSpeed = speed * moveInput.magnitude;
         var moveDirection = Vector3.Normalize(transform.forward * moveInput.y + transform.right * moveInput.x);
-        var smoothTime = m_CharacterController.isGrounded ? speedSmoothTime : speedSmoothTime / airControlPercent;
+        
+        var smoothTime = characterController.isGrounded ? speedSmoothTime : speedSmoothTime / airControlPercent;
 
         targetSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, smoothTime);
         currentVelocityY += Time.deltaTime * Physics.gravity.y;
 
         var velocity = moveDirection * targetSpeed + Vector3.up * currentVelocityY;
 
-        m_CharacterController.Move(velocity * Time.deltaTime);
+        characterController.Move(velocity * Time.deltaTime);
 
-        if (m_CharacterController.isGrounded) currentVelocityY = 0;
+        if (characterController.isGrounded) currentVelocityY = 0;
     }
 
     public void Rotate()
     {
-        var targetRotation = m_CharacterFollowCam.transform.eulerAngles.y;
+        var targetRotation = followCam.transform.eulerAngles.y;
 
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation,
                                     ref turnSmoothVelocity, turnSmoothTime);
@@ -71,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump()
     {
-        if (!m_CharacterController.isGrounded) return;
+        if (!characterController.isGrounded) return;
         currentVelocityY = jumpVelocity;
     }
 
@@ -79,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
     {
         var animationSpeedPercent = currentSpeed / speed;
 
-        m_Animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent, 0.05f, Time.deltaTime);
-        m_Animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent, 0.05f, Time.deltaTime);
+        animator.SetFloat("Horizontal Move", moveInput.x * animationSpeedPercent, 0.05f, Time.deltaTime);
+        animator.SetFloat("Vertical Move", moveInput.y * animationSpeedPercent, 0.05f, Time.deltaTime);
     }
 }

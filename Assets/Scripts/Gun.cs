@@ -22,9 +22,9 @@ public class Gun : MonoBehaviour
     [HideInInspector] public LayerMask excludeTarget;
     public float fireDistance = 100f; // 사정거리
 
+    public Transform leftHandMount;
 
     public Transform fireTransform; // 총알이 발사될 위치
-
     private AudioSource gunAudioPlayer; // 총 소리 재생기
 
 

@@ -16,12 +16,7 @@ public class PlayerInput : MonoBehaviour
     public bool fire { get; private set; } // 감지된 발사 입력값
     public bool reload { get; private set; } // 감지된 재장전 입력값
     public bool jump { get; private set; }
-
-
-    private void OnEnable()
-    {
-        ToggleCursorVisible(false);
-    }
+    
 
     // 매프레임 사용자 입력을 감지
     private void Update()
@@ -30,6 +25,7 @@ public class PlayerInput : MonoBehaviour
         if (GameManager.instance != null
             && GameManager.instance.isGameover)
         {
+            moveInput = Vector2.zero;
             fire = false;
             reload = false;
             jump = false;
@@ -40,15 +36,7 @@ public class PlayerInput : MonoBehaviour
         if (moveInput.sqrMagnitude > 1) moveInput = moveInput.normalized;
 
         jump = Input.GetButtonDown(jumpButtonName);
-
-        // fire에 관한 입력 감지
         fire = Input.GetButton(fireButtonName);
-        // reload에 관한 입력 감지
         reload = Input.GetButtonDown(reloadButtonName);
-    }
-
-    public void ToggleCursorVisible(bool active)
-    {
-        Cursor.visible = active;
     }
 }

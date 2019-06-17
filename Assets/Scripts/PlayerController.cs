@@ -21,9 +21,10 @@ public class PlayerController : MonoBehaviour
         playerHealth.onDeath += HandleDeath;
 
         UIManager.instance.UpdateLifeText(lifeRemains);
+        Cursor.visible = false;
+        
     }
-
-
+    
     private void HandleDeath()
     {
         playerMovement.enabled = false;
@@ -39,6 +40,8 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.instance.EndGame();
         }
+        
+        Cursor.visible = true;
     }
 
     public void Respawn()
@@ -51,6 +54,8 @@ public class PlayerController : MonoBehaviour
         playerShooter.enabled = true;
 
         playerShooter.gun.ammoRemain = 120;
+
+        Cursor.visible = false;
     }
 
 
