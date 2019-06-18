@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
     public void Respawn()
     {
         gameObject.SetActive(false);
-        transform.position = Utils.GetRandomPointOnNavMesh(transform.position, 30f, NavMesh.AllAreas);
+        transform.position = Utility.GetRandomPointOnNavMesh(transform.position, 30f, NavMesh.AllAreas);
 
         gameObject.SetActive(true);
         playerMovement.enabled = true;

@@ -2,29 +2,27 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Range(0.01f, 1f)] public float airControlPercent;
-
-    private float currentVelocityY;
-    public float jumpVelocity = 20f;
-
-    private Animator animator;
-
     private CharacterController characterController;
-    private Camera followCam;
-
     private PlayerInput playerInput;
+    private Animator animator;
+    
+    private Camera followCam;
+    
     public float speed = 6f;
+    public float jumpVelocity = 20f;
+    [Range(0.01f, 1f)] public float airControlPercent;
 
     public float speedSmoothTime = 0.1f;
     public float turnSmoothTime = 0.1f;
     
     private float speedSmoothVelocity;
     private float turnSmoothVelocity;
-
+    
+    private float currentVelocityY;
+    
     public float currentSpeed =>
         new Vector2(characterController.velocity.x, characterController.velocity.z).magnitude;
-
-
+    
     private void Start()
     {
         animator = GetComponent<Animator>();

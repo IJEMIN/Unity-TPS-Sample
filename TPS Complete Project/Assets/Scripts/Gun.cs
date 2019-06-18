@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 // 총을 구현한다
@@ -11,47 +12,41 @@ public class Gun : MonoBehaviour
         Empty, // 탄창이 빔
         Reloading // 재장전 중
     }
-
-    public int ammoRemain = 100; // 남은 전체 탄약
-
-    private LineRenderer bulletLineRenderer; // 총알 궤적을 그리기 위한 렌더러
-    private float currentSpreadVelocity;
-
-    public float damage = 25; // 공격력
-
-    [HideInInspector] public LayerMask excludeTarget;
-    public float fireDistance = 100f; // 사정거리
-
-    public Transform leftHandMount;
-
-    public Transform fireTransform; // 총알이 발사될 위치
-    private AudioSource gunAudioPlayer; // 총 소리 재생기
-
-
-    private PlayerShooter gunHolder;
-    private float lastFireTime; // 총을 마지막으로 발사한 시점
-
-    public int magAmmo; // 현재 탄창에 남아있는 탄약
-    public int magCapacity = 25; // 탄창 용량
-
+    public State state { get; private set; } // 현재 총의 상태
     
-    [Range(0f, 10f)] public float maxSpread = 3f;
-    private float spread;
-
+    private PlayerShooter gunHolder;
+    private LineRenderer bulletLineRenderer; // 총알 궤적을 그리기 위한 렌더러
+    
+    private AudioSource gunAudioPlayer; // 총 소리 재생기
+    public AudioClip shotClip; // 발사 소리
+    public AudioClip reloadClip; // 재장전 소리
     
     public ParticleSystem muzzleFlashEffect; // 총구 화염 효과
-    public AudioClip reloadClip; // 재장전 소리
-    public float reloadTime = 1.8f; // 재장전 소요 시간
-    [Range(0.01f, 3f)] public float restoreFromRecoilSpeed = 2f;
     public ParticleSystem shellEjectEffect; // 탄피 배출 효과
-    public AudioClip shotClip; // 발사 소리
-    [Range(1f, 10f)] public float stability = 1f;
+    
+    public Transform fireTransform; // 총알이 발사될 위치
+    public Transform leftHandMount;
 
+    public float damage = 25; // 공격력
+    public float fireDistance = 100f; // 사정거리
+
+    public int ammoRemain = 100; // 남은 전체 탄약
+    public int magAmmo; // 현재 탄창에 남아있는 탄약
+    public int magCapacity = 30; // 탄창 용량
 
     public float timeBetFire = 0.12f; // 총알 발사 간격
-    public State state { get; private set; } // 현재 총의 상태
-
+    public float reloadTime = 1.8f; // 재장전 소요 시간
     
+    [Range(0f, 10f)] public float maxSpread = 3f;
+    [Range(1f, 10f)] public float stability = 1f;
+    [Range(0.01f, 3f)] public float restoreFromRecoilSpeed = 2f;
+    private float currentSpread;
+    private float currentSpreadVelocity;
+
+    private float lastFireTime; // 총을 마지막으로 발사한 시점
+
+    private LayerMask excludeTarget;
+
     private void Awake()
     {
         // 사용할 컴포넌트들의 참조를 가져오기
@@ -64,15 +59,15 @@ public class Gun : MonoBehaviour
         bulletLineRenderer.enabled = false;
     }
 
-
     public void Setup(PlayerShooter gunHolder)
     {
         this.gunHolder = gunHolder;
+        excludeTarget = gunHolder.excludeTarget;
     }
 
     private void OnEnable()
     {
-        spread = 0;
+        currentSpread = 0;
         // 현재 탄창을 가득채우기
         magAmmo = magCapacity;
         // 총의 현재 상태를 총을 쏠 준비가 된 상태로 변경
@@ -81,7 +76,11 @@ public class Gun : MonoBehaviour
         lastFireTime = 0;
     }
 
-    // 발사 시도
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
     public bool Fire(Vector3 aimTarget)
     {
         // 현재 상태가 발사 가능한 상태
@@ -89,8 +88,8 @@ public class Gun : MonoBehaviour
         if (state == State.Ready
             && Time.time >= lastFireTime + timeBetFire)
         {
-            var xError = Utils.GedRandomNormalDistribution(0f, spread);
-            var yError = Utils.GedRandomNormalDistribution(0f, spread);
+            var xError = Utility.GedRandomNormalDistribution(0f, currentSpread);
+            var yError = Utility.GedRandomNormalDistribution(0f, currentSpread);
 
 
             var fireDirection = aimTarget - fireTransform.position;
@@ -98,7 +97,7 @@ public class Gun : MonoBehaviour
             fireDirection = Quaternion.AngleAxis(yError, Vector3.up) * fireDirection;
             fireDirection = Quaternion.AngleAxis(xError, Vector3.right) * fireDirection;
 
-            spread += 1f / stability;
+            currentSpread += 1f / stability;
 
             // 마지막 총 발사 시점을 갱신
             lastFireTime = Time.time;
@@ -234,7 +233,7 @@ public class Gun : MonoBehaviour
 
     private void Update()
     {
-        spread = Mathf.SmoothDamp(spread, 0f, ref currentSpreadVelocity, 1f / restoreFromRecoilSpeed);
-        spread = Mathf.Clamp(spread, 0f, maxSpread);
+        currentSpread = Mathf.SmoothDamp(currentSpread, 0f, ref currentSpreadVelocity, 1f / restoreFromRecoilSpeed);
+        currentSpread = Mathf.Clamp(currentSpread, 0f, maxSpread);
     }
 }

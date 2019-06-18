@@ -6,11 +6,11 @@
 public class PlayerHealth : LivingEntity
 {
     private Animator animator;
+    private AudioSource playerAudioPlayer; // 플레이어 소리 재생기
 
     public AudioClip deathClip; // 사망 소리
     public AudioClip hitClip; // 피격 소리
 
-    private AudioSource playerAudioPlayer; // 플레이어 소리 재생기
 
     private void Awake()
     {
@@ -41,22 +41,17 @@ public class PlayerHealth : LivingEntity
     }
 
     // 데미지 처리
-    public override void ApplyDamage(DamageMessage damageMessage)
+    public override bool ApplyDamage(DamageMessage damageMessage)
     {
-        if (IsInvulnerabe) return;
-
-        if (!dead)
-        {
-            // 사망하지 않은 경우에만 효과음을 재생
-            EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint, damageMessage.hitNormal, transform,
-                EffectManager.EffectType.Flesh);
-            playerAudioPlayer.PlayOneShot(hitClip);
-        }
+        if (!base.ApplyDamage(damageMessage)) return false;
+        
+        EffectManager.Instance.PlayHitEffect(damageMessage.hitPoint, damageMessage.hitNormal, transform, EffectManager.EffectType.Flesh);
+        playerAudioPlayer.PlayOneShot(hitClip);
 
         // LivingEntity의 OnDamage() 실행(데미지 적용)
-        base.ApplyDamage(damageMessage);
         // 갱신된 체력을 체력 슬라이더에 반영
         UpdateUI();
+        return true;
     }
 
     // 사망 처리

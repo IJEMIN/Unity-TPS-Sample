@@ -7,12 +7,11 @@ using UnityEngine.AI;
 public class ItemSpawner : MonoBehaviour
 {
     public GameObject[] items; // 생성할 아이템들
-    private float lastSpawnTime; // 마지막 생성 시점
-
-    public float maxDistance = 5f; // 플레이어 위치로부터 아이템이 배치될 최대 반경
-
     public Transform playerTransform; // 플레이어의 트랜스폼
-
+    
+    private float lastSpawnTime; // 마지막 생성 시점
+    public float maxDistance = 5f; // 플레이어 위치로부터 아이템이 배치될 최대 반경
+    
     private float timeBetSpawn; // 생성 간격
 
     public float timeBetSpawnMax = 7f; // 최대 시간 간격
@@ -41,7 +40,7 @@ public class ItemSpawner : MonoBehaviour
     private void Spawn()
     {
         // 플레이어 근처의 네브 메쉬위의 랜덤 위치를 가져옵니다.
-        var spawnPosition = Utils.GetRandomPointOnNavMesh(playerTransform.position, maxDistance, NavMesh.AllAreas);
+        var spawnPosition = Utility.GetRandomPointOnNavMesh(playerTransform.position, maxDistance, NavMesh.AllAreas);
         spawnPosition += Vector3.up * 0.5f; // 바닥에서 0.5만큼 위로 올립니다.
 
         // 아이템 중 하나를 무작위로 골라 랜덤 위치에 생성합니다.

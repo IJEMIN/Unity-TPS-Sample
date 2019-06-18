@@ -12,30 +12,27 @@ public class PlayerShooter : MonoBehaviour
 
     public AimState aimState { get; private set; }
 
-    private Vector3 aimPoint;
-
-    public LayerMask excludeTarget;
-
     public Gun gun; // 사용할 총
-
-    private Animator playerAnimator; // 애니메이터 컴포넌트
-
-    private Camera playerCamera;
-
+    public LayerMask excludeTarget;
+    
     private PlayerInput playerInput;
+    private Animator playerAnimator; // 애니메이터 컴포넌트
+    private Camera playerCamera;
+    
+    private Vector3 aimPoint;
     private bool linedUp => !(Mathf.Abs( playerCamera.transform.eulerAngles.y - transform.eulerAngles.y) > 1f);
-
-    private bool hasEnoughDistance => !Physics.Linecast(transform.position + Vector3.up * gun.fireTransform.position.y,
-        gun.fireTransform.position, ~excludeTarget);
-
-
-    private void Start()
+    private bool hasEnoughDistance => !Physics.Linecast(transform.position + Vector3.up * gun.fireTransform.position.y,gun.fireTransform.position, ~excludeTarget);
+    
+    void Awake()
     {
         if (excludeTarget != (excludeTarget | (1 << gameObject.layer)))
         {
             excludeTarget |= 1 << gameObject.layer;
         }
+    }
 
+    private void Start()
+    {
         playerCamera = Camera.main;
         playerInput = GetComponent<PlayerInput>();
         playerAnimator = GetComponent<Animator>();

@@ -5,8 +5,6 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance; // 싱글톤이 할당될 static 변수
 
-    private int score; // 현재 게임 점수
-
     // 외부에서 싱글톤 오브젝트를 가져올때 사용할 프로퍼티
     public static GameManager Instance
     {
@@ -22,14 +20,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int score; // 현재 게임 점수
     public bool isGameover { get; private set; } // 게임 오버 상태
 
     private void Awake()
     {
-        // 씬에 싱글톤 오브젝트가 된 다른 GameManager 오브젝트가 있다면
-        if (Instance != this)
-            // 자신을 파괴
-            Destroy(gameObject);
+        // 씬에 싱글톤 오브젝트가 된 다른 GameManager 오브젝트가 있다면 자신을 파괴
+        if (Instance != this) Destroy(gameObject);
     }
 
 

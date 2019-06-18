@@ -15,8 +15,8 @@ public class EnemySpawner : MonoBehaviour
 
     public Transform[] spawnPoints; // 적 AI를 소환할 위치들
 
-    public float speedMax = 3f; // 최대 속도
-    public float speedMin = 1f; // 최소 속도
+    public float speedMax = 12f; // 최대 속도
+    public float speedMin = 3f; // 최소 속도
 
     public Color strongEnemyColor = Color.red; // 강한 적 AI가 가지게 될 피부색
     private int wave; // 현재 웨이브
@@ -77,7 +77,7 @@ public class EnemySpawner : MonoBehaviour
         var enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
 
         // 생성한 적의 능력치와 추적 대상 설정
-        enemy.Setup(health, damage, speed, skinColor);
+        enemy.Setup(health, damage, speed,speed * 0.3f, skinColor);
 
         // 생성된 적을 리스트에 추가
         enemies.Add(enemy);

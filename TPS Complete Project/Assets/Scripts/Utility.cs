@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-public static class Utils
+public static class Utility
 {
     public static Vector3 GetRandomPointOnNavMesh(Vector3 center, float distance, int areaMask)
     {
