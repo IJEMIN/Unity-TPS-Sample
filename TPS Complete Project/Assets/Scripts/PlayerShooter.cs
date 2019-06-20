@@ -66,9 +66,11 @@ public class PlayerShooter : MonoBehaviour
         UpdateAimTarget();
 
         var angle = playerCamera.transform.eulerAngles.x;
-        if (angle > 90f) angle -= 360f;
+        if (angle > 270f) angle -= 360f;
+
+        angle = angle / 180f * -1f + 0.5f;
         
-        playerAnimator.SetFloat("Angle", angle / 90f);
+        playerAnimator.SetFloat("Angle", angle);
 
         UpdateUI();
     }
