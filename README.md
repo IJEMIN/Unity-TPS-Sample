@@ -1,8 +1,26 @@
 # Unity-TPS-Sample
 
-If you want to see completed version, check TPS-Complete-Project.
-
-If you want to start from scratch, check TPS-Start-Project
-
+유니티 TPS 프로젝트.
 
 ![banner](banner.gif)
+
+
+## 프로젝트 구성
+완성본을 미리 확인하고 싶다면 : TPS-Complete-Project.
+
+시작 프로젝트는 : TPS-Start-Project
+
+## 다운로드
+- **중요** : 예제 프로젝트들은 유니티 2019.1.7 버전을 기준을 제작되었습니다.
+
+### 권장 : 압축파일 다운로드
+
+준비 중입ㄴ디ㅏ...
+
+### 저장소를 다운로드(클론)하기
+
+깃 사용법을 안다면 이 저장소를 여러분들의 PC로 클론합니다.
+
+> __주의사항__: 
+> 이 저장소는 Git LFS를 사용합니다.
+> <br>깃허브 오른쪽 상단의 초록색 버튼 > 'Downloading Zip'으로는 파일을 정상적으로 다운로드 할 수 없습니다.
