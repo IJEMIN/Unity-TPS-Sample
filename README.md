@@ -2,7 +2,7 @@
 
 유니티 TPS 프로젝트.
 
-![banner](banner.gif)
+![banner](banner.png)
 
 
 ## 프로젝트 구성
