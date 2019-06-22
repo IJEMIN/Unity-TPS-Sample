@@ -14,7 +14,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
     private const float minTimeBetDamaged = 0.1f;
     private float lastDamagedTime;
 
-    protected bool IsInvulnerabe
+    protected bool IsInvulnerable
     {
         get
         {
@@ -36,7 +36,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
     // 데미지를 입는 기능
     public virtual bool ApplyDamage(DamageMessage damageMessage)
     {
-        if (IsInvulnerabe || damageMessage.damager == gameObject || dead) return false;
+        if (IsInvulnerable || damageMessage.damager == gameObject || dead) return false;
 
         lastDamagedTime = Time.time;
 
