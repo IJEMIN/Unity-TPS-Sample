@@ -88,8 +88,8 @@ public class Gun : MonoBehaviour
         if (state == State.Ready
             && Time.time >= lastFireTime + timeBetFire)
         {
-            var xError = Utility.GedRandomNormalDistribution(0f, currentSpread);
-            var yError = Utility.GedRandomNormalDistribution(0f, currentSpread);
+            var xError = Utility.GetRandomNormalDistribution(0f, currentSpread);
+            var yError = Utility.GetRandomNormalDistribution(0f, currentSpread);
 
 
             var fireDirection = aimTarget - fireTransform.position;

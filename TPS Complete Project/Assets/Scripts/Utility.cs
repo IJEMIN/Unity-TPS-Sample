@@ -14,7 +14,7 @@ public static class Utility
         return hit.position;
     }
     
-    public static float GedRandomNormalDistribution(float mean, float standard)
+    public static float GetRandomNormalDistribution(float mean, float standard)
     {
         var x1 = Random.Range(0f, 1f);
         var x2 = Random.Range(0f, 1f);
