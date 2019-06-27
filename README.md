@@ -10,7 +10,8 @@
 ## 다운로드
 ### 권장 : 압축파일 다운로드
 
-- 현재 저장소의 [Realse 탭](https://github.com/IJEMIN/Unity-TPS-Sample/releases)에서 압축 파일을 다운로드 합니다.
+- 현재 저장소의 [Realse 탭](https://github.com/IJEMIN/Unity-TPS-Sample/releases)에서 압축 파일(Unity-TPS-Sample.zip
+)을 다운로드 합니다.
 
 ### 저장소를 다운로드(클론)하기
 
