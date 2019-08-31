@@ -43,12 +43,14 @@ public class PlayerShooter : MonoBehaviour
 
     private void OnEnable()
     {
+        aimState = AimState.Idle;
         gun.gameObject.SetActive(true);
         gun.Setup(this);
     }
 
     private void OnDisable()
     {
+        aimState = AimState.Idle;
         gun.gameObject.SetActive(false);
     }
 
