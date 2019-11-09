@@ -10,8 +10,7 @@
 ## 다운로드
 ### 권장 : 압축파일 다운로드
 
-- 현재 저장소의 [Realse 탭](https://github.com/IJEMIN/Unity-TPS-Sample/releases)에서 압축 파일(Unity-TPS-Sample.zip
-)을 다운로드 합니다.
+- 현재 저장소의 [Realse 탭](https://github.com/IJEMIN/Unity-TPS-Sample/releases)에서 **압축 파일(Unity-TPS-Sample.zip)을** 다운로드 합니다.
 
 ### 저장소를 다운로드(클론)하기
 
@@ -20,7 +19,7 @@
 > __주의사항__: 
 > 이 저장소는 Git LFS를 사용합니다.
 > <br>Github Desktop 또는 LFS를 지원하는 각종 git 클라이언트를 통해 클론해주세요.
-> <br>깃허브 오른쪽 상단의 초록색 버튼 > 'Downloading Zip'으로는 파일을 정상적으로 다운로드 할 수 없습니다.
+> <br>깃허브 오른쪽 상단의 초록색 버튼 > 'Download Zip'으로는 파일을 정상적으로 다운로드 할 수 없습니다.
 
 ### 프로젝트 폴더 구성
 
